@@ -14,7 +14,83 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      album_items: {
+        Row: {
+          child_id: string
+          created_at: string
+          description: string | null
+          file_url: string
+          id: string
+          item_date: string | null
+          thumbnail_url: string | null
+          title: string | null
+          type: Database["public"]["Enums"]["item_type"]
+          user_id: string
+        }
+        Insert: {
+          child_id: string
+          created_at?: string
+          description?: string | null
+          file_url: string
+          id?: string
+          item_date?: string | null
+          thumbnail_url?: string | null
+          title?: string | null
+          type: Database["public"]["Enums"]["item_type"]
+          user_id: string
+        }
+        Update: {
+          child_id?: string
+          created_at?: string
+          description?: string | null
+          file_url?: string
+          id?: string
+          item_date?: string | null
+          thumbnail_url?: string | null
+          title?: string | null
+          type?: Database["public"]["Enums"]["item_type"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "album_items_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      children: {
+        Row: {
+          avatar_url: string | null
+          birth_date: string | null
+          color: string | null
+          created_at: string
+          id: string
+          name: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          birth_date?: string | null
+          color?: string | null
+          created_at?: string
+          id?: string
+          name: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          birth_date?: string | null
+          color?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +99,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      item_type: "drawing" | "certificate" | "photo" | "video"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +226,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      item_type: ["drawing", "certificate", "photo", "video"],
+    },
   },
 } as const
