@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useUser } from "@/lib/auth";
 import { AppShell } from "@/components/AppShell";
 import { CATEGORIES, type Category } from "@/lib/categories";
+import { useChildren } from "@/lib/useChildren";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
