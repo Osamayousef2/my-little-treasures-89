@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useUser } from "@/lib/auth";
 import { AppShell } from "@/components/AppShell";
 import { CATEGORIES, type Category } from "@/lib/categories";
+import { useChildren } from "@/lib/useChildren";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -36,7 +37,9 @@ function AddPage() {
   const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [desc, setDesc] = useState("");
   const [file, setFile] = useState<File | null>(null);
+  const [childId, setChildId] = useState<string>("none");
   const [busy, setBusy] = useState(false);
+  const { children } = useChildren(user?.id);
 
   if (loading || !user) return null;
 
@@ -62,6 +65,7 @@ function AddPage() {
     const { error } = await supabase.from("album_items").insert({
       user_id: user.id, type: category, title: title || null,
       description: desc || null, file_url: path, item_date: date || null,
+      child_id: childId === "none" ? null : childId,
     });
     setBusy(false);
     if (error) return toast.error(error.message);
@@ -90,6 +94,19 @@ function AddPage() {
                 </SelectContent>
               </Select>
             </div>
+
+            {children.length > 0 && (
+              <div>
+                <Label>الطفل (اختياري)</Label>
+                <Select value={childId} onValueChange={setChildId}>
+                  <SelectTrigger className="mt-1.5"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">— غير محدد —</SelectItem>
+                    {children.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
 
             <div>
               <Label htmlFor="title">العنوان</Label>
