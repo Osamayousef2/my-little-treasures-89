@@ -9,13 +9,36 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as CategoriesRouteImport } from './routes/categories'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AlbumRouteImport } from './routes/album'
+import { Route as AddRouteImport } from './routes/add'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as ChildIdRouteImport } from './routes/child.$id'
 
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CategoriesRoute = CategoriesRouteImport.update({
+  id: '/categories',
+  path: '/categories',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AlbumRoute = AlbumRouteImport.update({
+  id: '/album',
+  path: '/album',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AddRoute = AddRouteImport.update({
+  id: '/add',
+  path: '/add',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -23,49 +46,91 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ChildIdRoute = ChildIdRouteImport.update({
-  id: '/child/$id',
-  path: '/child/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/add': typeof AddRoute
+  '/album': typeof AlbumRoute
   '/auth': typeof AuthRoute
-  '/child/$id': typeof ChildIdRoute
+  '/categories': typeof CategoriesRoute
+  '/settings': typeof SettingsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/add': typeof AddRoute
+  '/album': typeof AlbumRoute
   '/auth': typeof AuthRoute
-  '/child/$id': typeof ChildIdRoute
+  '/categories': typeof CategoriesRoute
+  '/settings': typeof SettingsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/add': typeof AddRoute
+  '/album': typeof AlbumRoute
   '/auth': typeof AuthRoute
-  '/child/$id': typeof ChildIdRoute
+  '/categories': typeof CategoriesRoute
+  '/settings': typeof SettingsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/child/$id'
+  fullPaths: '/' | '/add' | '/album' | '/auth' | '/categories' | '/settings'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/child/$id'
-  id: '__root__' | '/' | '/auth' | '/child/$id'
+  to: '/' | '/add' | '/album' | '/auth' | '/categories' | '/settings'
+  id:
+    | '__root__'
+    | '/'
+    | '/add'
+    | '/album'
+    | '/auth'
+    | '/categories'
+    | '/settings'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AddRoute: typeof AddRoute
+  AlbumRoute: typeof AlbumRoute
   AuthRoute: typeof AuthRoute
-  ChildIdRoute: typeof ChildIdRoute
+  CategoriesRoute: typeof CategoriesRoute
+  SettingsRoute: typeof SettingsRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/categories': {
+      id: '/categories'
+      path: '/categories'
+      fullPath: '/categories'
+      preLoaderRoute: typeof CategoriesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/album': {
+      id: '/album'
+      path: '/album'
+      fullPath: '/album'
+      preLoaderRoute: typeof AlbumRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/add': {
+      id: '/add'
+      path: '/add'
+      fullPath: '/add'
+      preLoaderRoute: typeof AddRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -75,21 +140,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/child/$id': {
-      id: '/child/$id'
-      path: '/child/$id'
-      fullPath: '/child/$id'
-      preLoaderRoute: typeof ChildIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AddRoute: AddRoute,
+  AlbumRoute: AlbumRoute,
   AuthRoute: AuthRoute,
-  ChildIdRoute: ChildIdRoute,
+  CategoriesRoute: CategoriesRoute,
+  SettingsRoute: SettingsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}

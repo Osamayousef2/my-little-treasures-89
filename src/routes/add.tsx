@@ -1,0 +1,126 @@
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { useUser } from "@/lib/auth";
+import { AppShell } from "@/components/AppShell";
+import { CATEGORIES, type Category } from "@/lib/categories";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { Save, Upload } from "lucide-react";
+import { z } from "zod";
+import { zodValidator, fallback } from "@tanstack/zod-adapter";
+
+const searchSchema = z.object({
+  category: fallback(z.enum(["certificate","drawing","school","photo","video","note"]), "photo").default("photo"),
+});
+
+export const Route = createFileRoute("/add")({
+  head: () => ({ meta: [{ title: "إضافة ذكرى - دفتر الذكريات" }] }),
+  validateSearch: zodValidator(searchSchema),
+  component: AddPage,
+});
+
+function AddPage() {
+  const { user, loading } = useUser();
+  const navigate = useNavigate();
+  const initial = Route.useSearch();
+  useEffect(() => { if (!loading && !user) navigate({ to: "/auth" }); }, [user, loading, navigate]);
+
+  const [category, setCategory] = useState<Category>(initial.category);
+  const [title, setTitle] = useState("");
+  const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
+  const [desc, setDesc] = useState("");
+  const [file, setFile] = useState<File | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  if (loading || !user) return null;
+
+  const fileRequired = category !== "note";
+  const accept = category === "video" ? "video/*"
+    : category === "note" ? "*/*"
+    : category === "certificate" ? "image/*,application/pdf"
+    : "image/*";
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setBusy(true);
+    let path: string | null = null;
+    if (file) {
+      const ext = file.name.split(".").pop();
+      path = `${user.id}/general/${category}/${Date.now()}.${ext}`;
+      const { error: upErr } = await supabase.storage.from("album").upload(path, file);
+      if (upErr) { setBusy(false); return toast.error(upErr.message); }
+    } else if (fileRequired) {
+      setBusy(false);
+      return toast.error("يرجى اختيار ملف");
+    }
+    const { error } = await supabase.from("album_items").insert({
+      user_id: user.id, type: category, title: title || null,
+      description: desc || null, file_url: path, item_date: date || null,
+    });
+    setBusy(false);
+    if (error) return toast.error(error.message);
+    toast.success("تم الحفظ 💛");
+    navigate({ to: "/album" });
+  };
+
+  return (
+    <AppShell>
+      <div className="max-w-xl mx-auto">
+        <h1 className="text-2xl font-bold mb-1">إضافة ذكرى جديدة</h1>
+        <p className="text-sm text-muted-foreground mb-6">احفظ لحظة تستحق التذكر</p>
+
+        <Card className="p-5 shadow-card">
+          <form onSubmit={submit} className="space-y-4">
+            <div>
+              <Label>الفئة</Label>
+              <Select value={category} onValueChange={(v) => setCategory(v as Category)}>
+                <SelectTrigger className="mt-1.5"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {CATEGORIES.map((c) => (
+                    <SelectItem key={c.key} value={c.key}>
+                      <span className="flex items-center gap-2"><c.icon className="h-4 w-4" /> {c.label}</span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label htmlFor="title">العنوان</Label>
+              <Input id="title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="مثلاً: شهادة التفوق - الصف الأول" className="mt-1.5" />
+            </div>
+
+            <div>
+              <Label htmlFor="date">التاريخ</Label>
+              <Input id="date" type="date" value={date} onChange={(e) => setDate(e.target.value)} className="mt-1.5" />
+            </div>
+
+            <div>
+              <Label htmlFor="desc">الوصف / ملاحظات</Label>
+              <Textarea id="desc" value={desc} onChange={(e) => setDesc(e.target.value)} rows={4} placeholder="اكتب تفاصيل أو ذكرى مرتبطة بهذه اللحظة..." className="mt-1.5" />
+            </div>
+
+            <div>
+              <Label htmlFor="file">الملف {fileRequired ? "" : "(اختياري)"}</Label>
+              <label htmlFor="file" className="mt-1.5 flex items-center gap-3 px-4 py-3 border-2 border-dashed border-border rounded-lg cursor-pointer hover:border-primary transition">
+                <Upload className="h-5 w-5 text-muted-foreground" />
+                <span className="text-sm text-muted-foreground truncate">{file ? file.name : "اختر صورة، فيديو، PDF أو ملف"}</span>
+              </label>
+              <input id="file" type="file" accept={accept} className="hidden" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
+            </div>
+
+            <Button type="submit" disabled={busy} className="w-full h-11 rounded-lg font-bold">
+              <Save className="h-4 w-4 ml-2" /> {busy ? "جاري الحفظ..." : "حفظ الذكرى"}
+            </Button>
+          </form>
+        </Card>
+      </div>
+    </AppShell>
+  );
+}

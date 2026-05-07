@@ -16,10 +16,10 @@ export type Database = {
     Tables: {
       album_items: {
         Row: {
-          child_id: string
+          child_id: string | null
           created_at: string
           description: string | null
-          file_url: string
+          file_url: string | null
           id: string
           item_date: string | null
           thumbnail_url: string | null
@@ -28,10 +28,10 @@ export type Database = {
           user_id: string
         }
         Insert: {
-          child_id: string
+          child_id?: string | null
           created_at?: string
           description?: string | null
-          file_url: string
+          file_url?: string | null
           id?: string
           item_date?: string | null
           thumbnail_url?: string | null
@@ -40,10 +40,10 @@ export type Database = {
           user_id: string
         }
         Update: {
-          child_id?: string
+          child_id?: string | null
           created_at?: string
           description?: string | null
-          file_url?: string
+          file_url?: string | null
           id?: string
           item_date?: string | null
           thumbnail_url?: string | null
@@ -99,7 +99,13 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      item_type: "drawing" | "certificate" | "photo" | "video"
+      item_type:
+        | "drawing"
+        | "certificate"
+        | "photo"
+        | "video"
+        | "school"
+        | "note"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -227,7 +233,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      item_type: ["drawing", "certificate", "photo", "video"],
+      item_type: ["drawing", "certificate", "photo", "video", "school", "note"],
     },
   },
 } as const
