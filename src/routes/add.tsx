@@ -95,6 +95,19 @@ function AddPage() {
               </Select>
             </div>
 
+            {children.length > 0 && (
+              <div>
+                <Label>الطفل (اختياري)</Label>
+                <Select value={childId} onValueChange={setChildId}>
+                  <SelectTrigger className="mt-1.5"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">— غير محدد —</SelectItem>
+                    {children.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
             <div>
               <Label htmlFor="title">العنوان</Label>
               <Input id="title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="مثلاً: شهادة التفوق - الصف الأول" className="mt-1.5" />
