@@ -3,13 +3,14 @@ import { Home, BookHeart, Plus, FolderHeart, Settings, LogOut } from "lucide-rea
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 
-const NAV = [
+type NavItem = { to: "/" | "/album" | "/add" | "/categories" | "/settings"; label: string; icon: typeof Home; primary?: boolean };
+const NAV: NavItem[] = [
   { to: "/", label: "الرئيسية", icon: Home },
   { to: "/album", label: "الألبوم", icon: BookHeart },
   { to: "/add", label: "إضافة", icon: Plus, primary: true },
   { to: "/categories", label: "الفئات", icon: FolderHeart },
   { to: "/settings", label: "الإعدادات", icon: Settings },
-] as const;
+];
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
