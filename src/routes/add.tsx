@@ -36,7 +36,9 @@ function AddPage() {
   const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [desc, setDesc] = useState("");
   const [file, setFile] = useState<File | null>(null);
+  const [childId, setChildId] = useState<string>("none");
   const [busy, setBusy] = useState(false);
+  const { children } = useChildren(user?.id);
 
   if (loading || !user) return null;
 
@@ -62,6 +64,7 @@ function AddPage() {
     const { error } = await supabase.from("album_items").insert({
       user_id: user.id, type: category, title: title || null,
       description: desc || null, file_url: path, item_date: date || null,
+      child_id: childId === "none" ? null : childId,
     });
     setBusy(false);
     if (error) return toast.error(error.message);
