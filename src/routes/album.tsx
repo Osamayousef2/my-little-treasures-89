@@ -53,7 +53,7 @@ function AlbumPage() {
   }), [items, search]);
 
   const update = (patch: Partial<typeof search>) =>
-    navigate({ to: "/album", search: (prev) => ({ ...prev, ...patch }) });
+    navigate({ to: "/album", search: (prev: typeof search) => ({ ...prev, ...patch }) });
 
   if (loading || !user) return null;
 
