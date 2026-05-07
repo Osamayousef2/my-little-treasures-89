@@ -15,7 +15,6 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AlbumRouteImport } from './routes/album'
 import { Route as AddRouteImport } from './routes/add'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as ChildIdRouteImport } from './routes/child.$id'
 
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
@@ -47,11 +46,6 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ChildIdRoute = ChildIdRouteImport.update({
-  id: '/child/$id',
-  path: '/child/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -60,7 +54,6 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/categories': typeof CategoriesRoute
   '/settings': typeof SettingsRoute
-  '/child/$id': typeof ChildIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -69,7 +62,6 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/categories': typeof CategoriesRoute
   '/settings': typeof SettingsRoute
-  '/child/$id': typeof ChildIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -79,27 +71,12 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/categories': typeof CategoriesRoute
   '/settings': typeof SettingsRoute
-  '/child/$id': typeof ChildIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | '/add'
-    | '/album'
-    | '/auth'
-    | '/categories'
-    | '/settings'
-    | '/child/$id'
+  fullPaths: '/' | '/add' | '/album' | '/auth' | '/categories' | '/settings'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/add'
-    | '/album'
-    | '/auth'
-    | '/categories'
-    | '/settings'
-    | '/child/$id'
+  to: '/' | '/add' | '/album' | '/auth' | '/categories' | '/settings'
   id:
     | '__root__'
     | '/'
@@ -108,7 +85,6 @@ export interface FileRouteTypes {
     | '/auth'
     | '/categories'
     | '/settings'
-    | '/child/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -118,7 +94,6 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   CategoriesRoute: typeof CategoriesRoute
   SettingsRoute: typeof SettingsRoute
-  ChildIdRoute: typeof ChildIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -165,13 +140,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/child/$id': {
-      id: '/child/$id'
-      path: '/child/$id'
-      fullPath: '/child/$id'
-      preLoaderRoute: typeof ChildIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
@@ -182,8 +150,16 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   CategoriesRoute: CategoriesRoute,
   SettingsRoute: SettingsRoute,
-  ChildIdRoute: ChildIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}
