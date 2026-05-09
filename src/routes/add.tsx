@@ -13,6 +13,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Save, Upload } from "lucide-react";
+import { TagsInput } from "@/components/TagsInput";
+import { useMemories } from "@/lib/useMemories";
 import { z } from "zod";
 import { zodValidator, fallback } from "@tanstack/zod-adapter";
 
@@ -38,8 +40,11 @@ function AddPage() {
   const [desc, setDesc] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [childId, setChildId] = useState<string>("none");
+  const [tags, setTags] = useState<string[]>([]);
   const [busy, setBusy] = useState(false);
   const { children } = useChildren(user?.id);
+  const { items } = useMemories(user?.id);
+  const allTags = Array.from(new Set(items.flatMap((i) => i.tags ?? []))).sort();
 
   if (loading || !user) return null;
 
@@ -66,6 +71,7 @@ function AddPage() {
       user_id: user.id, type: category, title: title || null,
       description: desc || null, file_url: path, item_date: date || null,
       child_id: childId === "none" ? null : childId,
+      tags,
     });
     setBusy(false);
     if (error) return toast.error(error.message);
@@ -121,6 +127,13 @@ function AddPage() {
             <div>
               <Label htmlFor="desc">الوصف / ملاحظات</Label>
               <Textarea id="desc" value={desc} onChange={(e) => setDesc(e.target.value)} rows={4} placeholder="اكتب تفاصيل أو ذكرى مرتبطة بهذه اللحظة..." className="mt-1.5" />
+            </div>
+
+            <div>
+              <Label>الوسوم</Label>
+              <div className="mt-1.5">
+                <TagsInput value={tags} onChange={setTags} placeholder="مثلاً: عيد ميلاد، سفر، أول مرة" suggestions={allTags} />
+              </div>
             </div>
 
             <div>
