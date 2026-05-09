@@ -21,6 +21,7 @@ const searchSchema = z.object({
   category: fallback(z.enum(["certificate","drawing","school","photo","video","note","all"]), "all").default("all"),
   year: fallback(z.string(), "all").default("all"),
   child: fallback(z.string(), "all").default("all"),
+  tag: fallback(z.string(), "all").default("all"),
   q: fallback(z.string(), "").default(""),
   view: fallback(z.enum(["grid","timeline"]), "grid").default("grid"),
 });
@@ -47,14 +48,23 @@ function AlbumPage() {
     return Array.from(ys).sort((a, b) => b.localeCompare(a));
   }, [items]);
 
+  const allTags = useMemo(() => {
+    const t = new Set<string>();
+    items.forEach((i) => (i.tags ?? []).forEach((x) => t.add(x)));
+    return Array.from(t).sort();
+  }, [items]);
+
+  const childMap = useMemo(() => Object.fromEntries(children.map((c) => [c.id, c])), [children]);
+
   const filtered = useMemo(() => items.filter((i) => {
     if (search.category !== "all" && i.type !== search.category) return false;
     if (search.child !== "all" && i.child_id !== search.child) return false;
+    if (search.tag !== "all" && !(i.tags ?? []).includes(search.tag)) return false;
     const d = i.item_date ?? i.created_at;
     if (search.year !== "all" && (!d || d.slice(0, 4) !== search.year)) return false;
     if (search.q) {
       const q = search.q.toLowerCase();
-      const m = `${i.title ?? ""} ${i.description ?? ""}`.toLowerCase();
+      const m = `${i.title ?? ""} ${i.description ?? ""} ${(i.tags ?? []).join(" ")}`.toLowerCase();
       if (!m.includes(q)) return false;
     }
     return true;
