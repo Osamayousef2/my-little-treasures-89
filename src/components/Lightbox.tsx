@@ -1,16 +1,19 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useSignedUrl } from "@/lib/useMemories";
 import type { Memory } from "@/lib/useMemories";
+import type { Child } from "@/lib/useChildren";
 import { categoryOf } from "@/lib/categories";
+import { ageAt } from "@/lib/age";
 import { ChevronLeft, ChevronRight, Download } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
-export function Lightbox({ items, index, onClose, onIndex }: {
+export function Lightbox({ items, index, onClose, onIndex, childMap = {} }: {
   items: Memory[];
   index: number;
   onClose: () => void;
   onIndex: (i: number) => void;
+  childMap?: Record<string, Child>;
 }) {
   const open = index >= 0 && index < items.length;
   const item = open ? items[index] : null;
@@ -18,6 +21,8 @@ export function Lightbox({ items, index, onClose, onIndex }: {
   const cat = item ? categoryOf(item.type) : null;
   const isImage = item && ["drawing", "certificate", "photo", "school"].includes(item.type);
   const isVideo = item?.type === "video";
+  const child = item?.child_id ? childMap[item.child_id] : null;
+  const ageStr = ageAt(child?.birth_date, item?.item_date);
 
   useEffect(() => {
     if (!open) return;
