@@ -39,6 +39,7 @@ function AlbumPage() {
   const { items, reload } = useMemories(user?.id);
   const { children } = useChildren(user?.id);
   const [lightboxIndex, setLightboxIndex] = useState(-1);
+  const [moveItem, setMoveItem] = useState<Memory | null>(null);
 
   const years = useMemo(() => {
     const ys = new Set<string>();
@@ -112,25 +113,26 @@ function AlbumPage() {
           <Link to="/add"><Button className="rounded-full mt-4 shadow-soft"><Plus className="h-4 w-4 ml-1" /> أضف ذكرى</Button></Link>
         </div>
       ) : search.view === "grid" ? (
-        <GridView items={filtered} onChanged={reload} onOpen={setLightboxIndex} />
+        <GridView items={filtered} onChanged={reload} onOpen={setLightboxIndex} onMove={setMoveItem} />
       ) : (
-        <TimelineView items={filtered} onChanged={reload} onOpen={setLightboxIndex} />
+        <TimelineView items={filtered} onChanged={reload} onOpen={setLightboxIndex} onMove={setMoveItem} />
       )}
 
       <Lightbox items={filtered} index={lightboxIndex} onClose={() => setLightboxIndex(-1)} onIndex={setLightboxIndex} />
+      <MoveDialog open={!!moveItem} onOpenChange={(v) => !v && setMoveItem(null)} item={moveItem} userId={user.id} onMoved={reload} />
     </AppShell>
   );
 }
 
-function GridView({ items, onChanged, onOpen }: { items: Memory[]; onChanged: () => void; onOpen: (i: number) => void }) {
+function GridView({ items, onChanged, onOpen, onMove }: { items: Memory[]; onChanged: () => void; onOpen: (i: number) => void; onMove: (m: Memory) => void }) {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-      {items.map((it, i) => <MemoryCard key={it.id} item={it} onChanged={onChanged} onClick={() => onOpen(i)} />)}
+      {items.map((it, i) => <MemoryCard key={it.id} item={it} onChanged={onChanged} onClick={() => onOpen(i)} onMove={() => onMove(it)} />)}
     </div>
   );
 }
 
-function TimelineView({ items, onChanged, onOpen }: { items: Memory[]; onChanged: () => void; onOpen: (i: number) => void }) {
+function TimelineView({ items, onChanged, onOpen, onMove }: { items: Memory[]; onChanged: () => void; onOpen: (i: number) => void; onMove: (m: Memory) => void }) {
   const groups = useMemo(() => {
     const map = new Map<string, { item: Memory; index: number }[]>();
     items.forEach((i, idx) => {
@@ -155,7 +157,7 @@ function TimelineView({ items, onChanged, onOpen }: { items: Memory[]; onChanged
             {fmtMonth(ym)} <span className="text-muted-foreground font-normal">({list.length})</span>
           </h3>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-            {list.map(({ item, index }) => <MemoryCard key={item.id} item={item} onChanged={onChanged} onClick={() => onOpen(index)} />)}
+            {list.map(({ item, index }) => <MemoryCard key={item.id} item={item} onChanged={onChanged} onClick={() => onOpen(index)} onMove={() => onMove(item)} />)}
           </div>
         </section>
       ))}
@@ -163,7 +165,7 @@ function TimelineView({ items, onChanged, onOpen }: { items: Memory[]; onChanged
   );
 }
 
-function MemoryCard({ item, onChanged, onClick }: { item: Memory; onChanged: () => void; onClick: () => void }) {
+function MemoryCard({ item, onChanged, onClick, onMove }: { item: Memory; onChanged: () => void; onClick: () => void; onMove: () => void }) {
   const url = useSignedUrl(item.file_url);
   const cat = categoryOf(item.type);
   const isImage = ["drawing", "certificate", "photo", "school"].includes(item.type);
@@ -178,6 +180,8 @@ function MemoryCard({ item, onChanged, onClick }: { item: Memory; onChanged: () 
     toast.success("تم الحذف");
     onChanged();
   };
+
+  const move = (e: React.MouseEvent) => { e.stopPropagation(); onMove(); };
 
   return (
     <button onClick={onClick} className="text-right w-full">
@@ -202,9 +206,14 @@ function MemoryCard({ item, onChanged, onClick }: { item: Memory; onChanged: () 
               </div>
             </div>
           )}
-          <button onClick={remove} className="absolute top-2 left-2 p-1.5 rounded-full bg-white/95 opacity-0 group-hover:opacity-100 transition shadow-card">
-            <Trash2 className="h-3.5 w-3.5 text-destructive" />
-          </button>
+          <div className="absolute top-2 left-2 flex gap-1.5">
+            <button onClick={remove} aria-label="حذف" className="p-1.5 rounded-full bg-white/95 shadow-card active:scale-95 transition">
+              <Trash2 className="h-3.5 w-3.5 text-destructive" />
+            </button>
+            <button onClick={move} aria-label="نقل" className="p-1.5 rounded-full bg-white/95 shadow-card active:scale-95 transition">
+              <Move className="h-3.5 w-3.5 text-primary" />
+            </button>
+          </div>
           <span className="absolute top-2 right-2 text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/95 text-foreground/80 shadow-card">{cat.label}</span>
         </div>
         <div className="p-3">
