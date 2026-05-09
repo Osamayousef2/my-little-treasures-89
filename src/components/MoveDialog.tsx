@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
@@ -21,11 +21,12 @@ export function MoveDialog({ open, onOpenChange, item, userId, onMoved }: {
   const [type, setType] = useState<Category | "">("");
   const [saving, setSaving] = useState(false);
 
-  // sync defaults when item changes
-  if (item && type === "" && open) {
-    setType(item.type);
-    setChild(item.child_id ?? "none");
-  }
+  useEffect(() => {
+    if (open && item) {
+      setType(item.type);
+      setChild(item.child_id ?? "none");
+    }
+  }, [open, item]);
 
   const save = async () => {
     if (!item) return;
