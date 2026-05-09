@@ -11,6 +11,7 @@ export type Memory = {
   item_date: string | null;
   child_id: string | null;
   created_at: string;
+  tags: string[];
 };
 
 export function useMemories(userId: string | undefined) {
@@ -22,7 +23,7 @@ export function useMemories(userId: string | undefined) {
     setLoading(true);
     const { data } = await supabase
       .from("album_items")
-      .select("id,type,title,description,file_url,item_date,child_id,created_at")
+      .select("id,type,title,description,file_url,item_date,child_id,created_at,tags")
       .order("item_date", { ascending: false, nullsFirst: false })
       .order("created_at", { ascending: false });
     setItems((data as Memory[]) ?? []);
