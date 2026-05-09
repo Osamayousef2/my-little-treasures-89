@@ -83,7 +83,11 @@ export function Lightbox({ items, index, onClose, onIndex, childMap = {} }: {
             <div className="min-w-0">
               <span className="text-xs text-primary font-bold">{cat.label}</span>
               <h3 className="text-lg font-bold truncate">{item.title || "بدون عنوان"}</h3>
-              {item.item_date && <p className="text-xs text-muted-foreground mt-0.5">📅 {item.item_date}</p>}
+              <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1 text-xs text-muted-foreground">
+                {item.item_date && <span>📅 {item.item_date}</span>}
+                {child && <span className="text-primary font-bold">👶 {child.name}</span>}
+                {ageStr && <span>🎂 {ageStr}</span>}
+              </div>
             </div>
             {item.file_url && (
               <button onClick={download} className="shrink-0 h-9 px-3 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center gap-1.5 shadow-soft">
@@ -91,6 +95,13 @@ export function Lightbox({ items, index, onClose, onIndex, childMap = {} }: {
               </button>
             )}
           </div>
+          {item.tags && item.tags.length > 0 && (
+            <div className="flex flex-wrap gap-1.5 mt-3">
+              {item.tags.map((t) => (
+                <span key={t} className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary font-bold">#{t}</span>
+              ))}
+            </div>
+          )}
           {item.description && <p className="text-sm text-muted-foreground mt-3 whitespace-pre-wrap">{item.description}</p>}
         </div>
       </DialogContent>
