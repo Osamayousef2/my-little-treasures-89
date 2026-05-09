@@ -22,6 +22,7 @@ export type Database = {
           file_url: string | null
           id: string
           item_date: string | null
+          tags: string[]
           thumbnail_url: string | null
           title: string | null
           type: Database["public"]["Enums"]["item_type"]
@@ -34,6 +35,7 @@ export type Database = {
           file_url?: string | null
           id?: string
           item_date?: string | null
+          tags?: string[]
           thumbnail_url?: string | null
           title?: string | null
           type: Database["public"]["Enums"]["item_type"]
@@ -46,6 +48,7 @@ export type Database = {
           file_url?: string | null
           id?: string
           item_date?: string | null
+          tags?: string[]
           thumbnail_url?: string | null
           title?: string | null
           type?: Database["public"]["Enums"]["item_type"]
