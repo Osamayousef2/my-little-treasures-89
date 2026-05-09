@@ -117,18 +117,33 @@ function AlbumPage() {
         </Select>
       </Card>
 
+      {allTags.length > 0 && (
+        <div className="flex flex-wrap gap-1.5 mb-5">
+          <button onClick={() => update({ tag: "all" })}
+            className={`text-xs px-2.5 py-1 rounded-full font-bold transition ${search.tag === "all" ? "bg-primary text-primary-foreground" : "bg-muted hover:bg-accent"}`}>
+            الكل
+          </button>
+          {allTags.map((t) => (
+            <button key={t} onClick={() => update({ tag: search.tag === t ? "all" : t })}
+              className={`text-xs px-2.5 py-1 rounded-full font-bold transition ${search.tag === t ? "bg-primary text-primary-foreground" : "bg-muted hover:bg-accent"}`}>
+              #{t}
+            </button>
+          ))}
+        </div>
+      )}
+
       {filtered.length === 0 ? (
         <div className="text-center py-16 border-2 border-dashed border-primary/30 rounded-3xl bg-card/50">
           <p className="text-muted-foreground">لا توجد ذكريات مطابقة</p>
           <Link to="/add"><Button className="rounded-full mt-4 shadow-soft"><Plus className="h-4 w-4 ml-1" /> أضف ذكرى</Button></Link>
         </div>
       ) : search.view === "grid" ? (
-        <GridView items={filtered} onChanged={reload} onOpen={setLightboxIndex} onMove={setMoveItem} />
+        <GridView items={filtered} onChanged={reload} onOpen={setLightboxIndex} onMove={setMoveItem} childMap={childMap} onTagClick={(t) => update({ tag: t })} />
       ) : (
-        <TimelineView items={filtered} onChanged={reload} onOpen={setLightboxIndex} onMove={setMoveItem} />
+        <TimelineView items={filtered} onChanged={reload} onOpen={setLightboxIndex} onMove={setMoveItem} childMap={childMap} onTagClick={(t) => update({ tag: t })} />
       )}
 
-      <Lightbox items={filtered} index={lightboxIndex} onClose={() => setLightboxIndex(-1)} onIndex={setLightboxIndex} />
+      <Lightbox items={filtered} index={lightboxIndex} onClose={() => setLightboxIndex(-1)} onIndex={setLightboxIndex} childMap={childMap} />
       <MoveDialog open={!!moveItem} onOpenChange={(v) => !v && setMoveItem(null)} item={moveItem} userId={user.id} onMoved={reload} />
     </AppShell>
   );
