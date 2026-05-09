@@ -14,6 +14,7 @@ import { LayoutGrid, Calendar, Trash2, Plus, Move } from "lucide-react";
 import { MoveDialog } from "@/components/MoveDialog";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { ageAt } from "@/lib/age";
 import { z } from "zod";
 import { zodValidator, fallback } from "@tanstack/zod-adapter";
 
@@ -149,15 +150,18 @@ function AlbumPage() {
   );
 }
 
-function GridView({ items, onChanged, onOpen, onMove }: { items: Memory[]; onChanged: () => void; onOpen: (i: number) => void; onMove: (m: Memory) => void }) {
+type ChildMap = Record<string, import("@/lib/useChildren").Child>;
+type CardCommonProps = { onChanged: () => void; onOpen: (i: number) => void; onMove: (m: Memory) => void; childMap: ChildMap; onTagClick: (t: string) => void };
+
+function GridView({ items, ...rest }: { items: Memory[] } & CardCommonProps) {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-      {items.map((it, i) => <MemoryCard key={it.id} item={it} onChanged={onChanged} onClick={() => onOpen(i)} onMove={() => onMove(it)} />)}
+      {items.map((it, i) => <MemoryCard key={it.id} item={it} index={i} {...rest} />)}
     </div>
   );
 }
 
-function TimelineView({ items, onChanged, onOpen, onMove }: { items: Memory[]; onChanged: () => void; onOpen: (i: number) => void; onMove: (m: Memory) => void }) {
+function TimelineView({ items, ...rest }: { items: Memory[] } & CardCommonProps) {
   const groups = useMemo(() => {
     const map = new Map<string, { item: Memory; index: number }[]>();
     items.forEach((i, idx) => {
@@ -182,7 +186,7 @@ function TimelineView({ items, onChanged, onOpen, onMove }: { items: Memory[]; o
             {fmtMonth(ym)} <span className="text-muted-foreground font-normal">({list.length})</span>
           </h3>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-            {list.map(({ item, index }) => <MemoryCard key={item.id} item={item} onChanged={onChanged} onClick={() => onOpen(index)} onMove={() => onMove(item)} />)}
+            {list.map(({ item, index }) => <MemoryCard key={item.id} item={item} index={index} {...rest} />)}
           </div>
         </section>
       ))}
@@ -190,11 +194,13 @@ function TimelineView({ items, onChanged, onOpen, onMove }: { items: Memory[]; o
   );
 }
 
-function MemoryCard({ item, onChanged, onClick, onMove }: { item: Memory; onChanged: () => void; onClick: () => void; onMove: () => void }) {
+function MemoryCard({ item, index, onChanged, onOpen, onMove, childMap, onTagClick }: { item: Memory; index: number } & CardCommonProps) {
   const url = useSignedUrl(item.file_url);
   const cat = categoryOf(item.type);
   const isImage = ["drawing", "certificate", "photo", "school"].includes(item.type);
   const isVideo = item.type === "video";
+  const child = item.child_id ? childMap[item.child_id] : null;
+  const ageStr = ageAt(child?.birth_date, item.item_date);
 
   const remove = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -206,10 +212,10 @@ function MemoryCard({ item, onChanged, onClick, onMove }: { item: Memory; onChan
     onChanged();
   };
 
-  const move = (e: React.MouseEvent) => { e.stopPropagation(); onMove(); };
+  const move = (e: React.MouseEvent) => { e.stopPropagation(); onMove(item); };
 
   return (
-    <button onClick={onClick} className="text-right w-full">
+    <button onClick={() => onOpen(index)} className="text-right w-full">
       <Card className="group overflow-hidden shadow-card hover:shadow-pop transition relative p-0 hover:-translate-y-0.5 rounded-2xl border-2 border-primary/5">
         <div className="aspect-square bg-gradient-to-br from-muted to-card relative">
           {url && isImage && <img src={url} alt={item.title ?? ""} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />}
@@ -243,7 +249,21 @@ function MemoryCard({ item, onChanged, onClick, onMove }: { item: Memory; onChan
         </div>
         <div className="p-3">
           <p className="font-bold text-sm truncate">{item.title || "بدون عنوان"}</p>
-          {item.item_date && <p className="text-xs text-muted-foreground mt-0.5">📅 {item.item_date}</p>}
+          <div className="flex items-center justify-between gap-2 mt-0.5">
+            {item.item_date && <p className="text-xs text-muted-foreground">📅 {item.item_date}</p>}
+            {child && <p className="text-xs text-primary font-bold truncate">{child.name}</p>}
+          </div>
+          {ageStr && <p className="text-[11px] text-muted-foreground mt-0.5">🎂 {ageStr}</p>}
+          {item.tags && item.tags.length > 0 && (
+            <div className="flex flex-wrap gap-1 mt-2">
+              {item.tags.slice(0, 3).map((t) => (
+                <span key={t} onClick={(e) => { e.stopPropagation(); onTagClick(t); }}
+                  className="text-[10px] px-1.5 py-0.5 rounded-full bg-primary/10 text-primary font-bold hover:bg-primary/20 cursor-pointer">
+                  #{t}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
       </Card>
     </button>
