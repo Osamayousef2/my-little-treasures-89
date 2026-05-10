@@ -93,11 +93,18 @@ export function Lightbox({ items, index, onClose, onIndex, childMap = {}, onUpda
                 {ageStr && <span>🎂 {ageStr}</span>}
               </div>
             </div>
-            {item.file_url && (
-              <button onClick={download} className="shrink-0 h-9 px-3 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center gap-1.5 shadow-soft">
-                <Download className="h-3.5 w-3.5" /> تحميل
-              </button>
-            )}
+            <div className="shrink-0 flex items-center gap-2">
+              {isImage && url && item.file_url && (
+                <button onClick={() => setCropOpen(true)} className="h-9 px-3 rounded-full bg-secondary text-secondary-foreground text-xs font-bold flex items-center gap-1.5 shadow-soft">
+                  <Crop className="h-3.5 w-3.5" /> تعديل
+                </button>
+              )}
+              {item.file_url && (
+                <button onClick={download} className="h-9 px-3 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center gap-1.5 shadow-soft">
+                  <Download className="h-3.5 w-3.5" /> تحميل
+                </button>
+              )}
+            </div>
           </div>
           {item.tags && item.tags.length > 0 && (
             <div className="flex flex-wrap gap-1.5 mt-3">
