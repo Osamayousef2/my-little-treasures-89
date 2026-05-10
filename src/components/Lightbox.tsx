@@ -1,20 +1,24 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useSignedUrl } from "@/lib/useMemories";
 import type { Memory } from "@/lib/useMemories";
 import type { Child } from "@/lib/useChildren";
 import { categoryOf } from "@/lib/categories";
 import { ageAt } from "@/lib/age";
-import { ChevronLeft, ChevronRight, Download } from "lucide-react";
+import { ChevronLeft, ChevronRight, Download, Crop } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { ImageCropDialog } from "./ImageCropDialog";
 
-export function Lightbox({ items, index, onClose, onIndex, childMap = {} }: {
+export function Lightbox({ items, index, onClose, onIndex, childMap = {}, onUpdated }: {
   items: Memory[];
   index: number;
   onClose: () => void;
   onIndex: (i: number) => void;
   childMap?: Record<string, Child>;
+  onUpdated?: () => void;
 }) {
+  const [cropOpen, setCropOpen] = useState(false);
+  const [bust, setBust] = useState(0);
   const open = index >= 0 && index < items.length;
   const item = open ? items[index] : null;
   const url = useSignedUrl(item?.file_url ?? null);
