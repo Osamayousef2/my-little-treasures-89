@@ -174,6 +174,13 @@ function AddPage() {
                 <span className="text-sm text-muted-foreground truncate">{file ? file.name : "اختر صورة، فيديو، PDF أو ملف"}</span>
               </label>
               <input id="file" type="file" accept={accept} className="hidden" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
+              {file && file.type.startsWith("image/") && (
+                <Button type="button" variant="outline" size="sm" onClick={suggest} disabled={suggesting}
+                  className="mt-2 rounded-full">
+                  <Sparkles className="h-4 w-4 ml-1" />
+                  {suggesting ? "جاري التحليل..." : "اقتراح تلقائي بالذكاء الاصطناعي"}
+                </Button>
+              )}
             </div>
 
             <Button type="submit" disabled={busy} className="w-full h-11 rounded-lg font-bold">
