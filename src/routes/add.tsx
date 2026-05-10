@@ -42,6 +42,7 @@ function AddPage() {
   const [childId, setChildId] = useState<string>("none");
   const [tags, setTags] = useState<string[]>([]);
   const [busy, setBusy] = useState(false);
+  const [suggesting, setSuggesting] = useState(false);
   const { children } = useChildren(user?.id);
   const { items } = useMemories(user?.id);
   const allTags = Array.from(new Set(items.flatMap((i) => i.tags ?? []))).sort();
