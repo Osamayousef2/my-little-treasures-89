@@ -56,7 +56,7 @@ export function Lightbox({ items, index, onClose, onIndex, childMap = {}, onUpda
       <DialogContent className="max-w-5xl w-[95vw] p-0 overflow-hidden rounded-3xl border-4 border-white shadow-pop bg-card">
         <div className="relative bg-gradient-to-br from-muted to-card">
           <div className="flex items-center justify-center min-h-[60vh] max-h-[80vh] p-4">
-            {url && isImage && <img src={`${url}${bust ? `#v=${bust}` : ""}`} alt={item.title ?? ""} className="max-h-[75vh] max-w-full object-contain rounded-xl" />}
+            {url && isImage && <img src={`${url}${bust ? `&v=${bust}` : ""}`} alt={item.title ?? ""} className="max-h-[75vh] max-w-full object-contain rounded-xl" />}
             {url && isVideo && <video src={url} controls autoPlay className="max-h-[75vh] max-w-full rounded-xl" />}
             {!isImage && !isVideo && (
               <div className="text-center p-8">
