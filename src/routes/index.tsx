@@ -7,9 +7,11 @@ import { useChildren, type Child } from "@/lib/useChildren";
 import { AddChildDialog, colorOf } from "@/components/AddChildDialog";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Heart, Trash2, Images, Sparkles } from "lucide-react";
+import { Plus, Heart, Trash2, Images, Sparkles, Pencil } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { EditChildDialog } from "@/components/EditChildDialog";
+import { ageAt } from "@/lib/age";
 
 export const Route = createFileRoute("/")({
   head: () => ({ meta: [{ title: "الرئيسية - دفتر الذكريات" }] }),
@@ -63,7 +65,7 @@ function HomePage() {
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {children.map((c) => (
-              <ChildCard key={c.id} child={c} count={countFor(c.id)} onRemove={removeChild} />
+              <ChildCard key={c.id} child={c} count={countFor(c.id)} onRemove={removeChild} onChanged={reloadChildren} />
             ))}
             <AddChildDialog userId={user.id} onAdded={reloadChildren} trigger={
               <button className="rounded-3xl border-2 border-dashed border-primary/40 hover:border-primary hover:bg-primary/5 flex flex-col items-center justify-center gap-2 text-primary transition-colors p-6 min-h-[160px]">
@@ -105,8 +107,9 @@ function HomePage() {
   );
 }
 
-function ChildCard({ child, count, onRemove }: { child: Child; count: number; onRemove: (id: string) => void }) {
+function ChildCard({ child, count, onRemove, onChanged }: { child: Child; count: number; onRemove: (id: string) => void; onChanged: () => void }) {
   const col = colorOf(child.color);
+  const age = ageAt(child.birth_date, new Date().toISOString().slice(0, 10));
   return (
     <Link to="/album" search={{ child: child.id }}>
       <Card className="group relative rounded-3xl border-2 border-primary/10 overflow-hidden bg-gradient-card shadow-soft hover:shadow-pop transition-all hover:-translate-y-1 cursor-pointer p-0 min-h-[160px]">
@@ -117,14 +120,29 @@ function ChildCard({ child, count, onRemove }: { child: Child; count: number; on
           </div>
           <h3 className="font-bold text-lg">{child.name}</h3>
           <p className="text-xs text-muted-foreground mt-1">{count} ذكرى</p>
+          {age && <p className="text-[11px] text-muted-foreground mt-0.5">🎂 {age}</p>}
+          {!child.birth_date && (
+            <p className="text-[11px] text-primary/80 mt-0.5">أضف تاريخ الميلاد</p>
+          )}
         </div>
-        <button
-          onClick={(e) => { e.preventDefault(); onRemove(child.id); }}
-          aria-label="حذف"
-          className="absolute top-2 left-2 p-1.5 rounded-full bg-white/95 shadow-card active:scale-95 transition"
-        >
-          <Trash2 className="h-3.5 w-3.5 text-destructive" />
-        </button>
+        <div className="absolute top-2 left-2 flex gap-1.5" onClick={(e) => e.preventDefault()}>
+          <EditChildDialog
+            child={child}
+            onSaved={onChanged}
+            trigger={
+              <button aria-label="تعديل" className="p-1.5 rounded-full bg-white/95 shadow-card active:scale-95 transition">
+                <Pencil className="h-3.5 w-3.5 text-primary" />
+              </button>
+            }
+          />
+          <button
+            onClick={(e) => { e.preventDefault(); onRemove(child.id); }}
+            aria-label="حذف"
+            className="p-1.5 rounded-full bg-white/95 shadow-card active:scale-95 transition"
+          >
+            <Trash2 className="h-3.5 w-3.5 text-destructive" />
+          </button>
+        </div>
       </Card>
     </Link>
   );

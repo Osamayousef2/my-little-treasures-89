@@ -1,20 +1,24 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useSignedUrl } from "@/lib/useMemories";
 import type { Memory } from "@/lib/useMemories";
 import type { Child } from "@/lib/useChildren";
 import { categoryOf } from "@/lib/categories";
 import { ageAt } from "@/lib/age";
-import { ChevronLeft, ChevronRight, Download } from "lucide-react";
+import { ChevronLeft, ChevronRight, Download, Crop } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { ImageCropDialog } from "./ImageCropDialog";
 
-export function Lightbox({ items, index, onClose, onIndex, childMap = {} }: {
+export function Lightbox({ items, index, onClose, onIndex, childMap = {}, onUpdated }: {
   items: Memory[];
   index: number;
   onClose: () => void;
   onIndex: (i: number) => void;
   childMap?: Record<string, Child>;
+  onUpdated?: () => void;
 }) {
+  const [cropOpen, setCropOpen] = useState(false);
+  const [bust, setBust] = useState(0);
   const open = index >= 0 && index < items.length;
   const item = open ? items[index] : null;
   const url = useSignedUrl(item?.file_url ?? null);
@@ -52,7 +56,7 @@ export function Lightbox({ items, index, onClose, onIndex, childMap = {} }: {
       <DialogContent className="max-w-5xl w-[95vw] p-0 overflow-hidden rounded-3xl border-4 border-white shadow-pop bg-card">
         <div className="relative bg-gradient-to-br from-muted to-card">
           <div className="flex items-center justify-center min-h-[60vh] max-h-[80vh] p-4">
-            {url && isImage && <img src={url} alt={item.title ?? ""} className="max-h-[75vh] max-w-full object-contain rounded-xl" />}
+            {url && isImage && <img src={`${url}${bust ? `&v=${bust}` : ""}`} alt={item.title ?? ""} className="max-h-[75vh] max-w-full object-contain rounded-xl" />}
             {url && isVideo && <video src={url} controls autoPlay className="max-h-[75vh] max-w-full rounded-xl" />}
             {!isImage && !isVideo && (
               <div className="text-center p-8">
@@ -89,11 +93,18 @@ export function Lightbox({ items, index, onClose, onIndex, childMap = {} }: {
                 {ageStr && <span>🎂 {ageStr}</span>}
               </div>
             </div>
-            {item.file_url && (
-              <button onClick={download} className="shrink-0 h-9 px-3 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center gap-1.5 shadow-soft">
-                <Download className="h-3.5 w-3.5" /> تحميل
-              </button>
-            )}
+            <div className="shrink-0 flex items-center gap-2">
+              {isImage && url && item.file_url && (
+                <button onClick={() => setCropOpen(true)} className="h-9 px-3 rounded-full bg-secondary text-secondary-foreground text-xs font-bold flex items-center gap-1.5 shadow-soft">
+                  <Crop className="h-3.5 w-3.5" /> تعديل
+                </button>
+              )}
+              {item.file_url && (
+                <button onClick={download} className="h-9 px-3 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center gap-1.5 shadow-soft">
+                  <Download className="h-3.5 w-3.5" /> تحميل
+                </button>
+              )}
+            </div>
           </div>
           {item.tags && item.tags.length > 0 && (
             <div className="flex flex-wrap gap-1.5 mt-3">
@@ -105,6 +116,15 @@ export function Lightbox({ items, index, onClose, onIndex, childMap = {} }: {
           {item.description && <p className="text-sm text-muted-foreground mt-3 whitespace-pre-wrap">{item.description}</p>}
         </div>
       </DialogContent>
+      {isImage && url && item.file_url && (
+        <ImageCropDialog
+          open={cropOpen}
+          onOpenChange={setCropOpen}
+          src={url}
+          path={item.file_url}
+          onSaved={() => { setBust(Date.now()); onUpdated?.(); }}
+        />
+      )}
     </Dialog>
   );
 }
