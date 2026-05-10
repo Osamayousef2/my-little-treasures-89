@@ -107,8 +107,9 @@ function HomePage() {
   );
 }
 
-function ChildCard({ child, count, onRemove }: { child: Child; count: number; onRemove: (id: string) => void }) {
+function ChildCard({ child, count, onRemove, onChanged }: { child: Child; count: number; onRemove: (id: string) => void; onChanged: () => void }) {
   const col = colorOf(child.color);
+  const age = ageAt(child.birth_date, new Date().toISOString().slice(0, 10));
   return (
     <Link to="/album" search={{ child: child.id }}>
       <Card className="group relative rounded-3xl border-2 border-primary/10 overflow-hidden bg-gradient-card shadow-soft hover:shadow-pop transition-all hover:-translate-y-1 cursor-pointer p-0 min-h-[160px]">
@@ -119,14 +120,29 @@ function ChildCard({ child, count, onRemove }: { child: Child; count: number; on
           </div>
           <h3 className="font-bold text-lg">{child.name}</h3>
           <p className="text-xs text-muted-foreground mt-1">{count} ذكرى</p>
+          {age && <p className="text-[11px] text-muted-foreground mt-0.5">🎂 {age}</p>}
+          {!child.birth_date && (
+            <p className="text-[11px] text-primary/80 mt-0.5">أضف تاريخ الميلاد</p>
+          )}
         </div>
-        <button
-          onClick={(e) => { e.preventDefault(); onRemove(child.id); }}
-          aria-label="حذف"
-          className="absolute top-2 left-2 p-1.5 rounded-full bg-white/95 shadow-card active:scale-95 transition"
-        >
-          <Trash2 className="h-3.5 w-3.5 text-destructive" />
-        </button>
+        <div className="absolute top-2 left-2 flex gap-1.5" onClick={(e) => e.preventDefault()}>
+          <EditChildDialog
+            child={child}
+            onSaved={onChanged}
+            trigger={
+              <button aria-label="تعديل" className="p-1.5 rounded-full bg-white/95 shadow-card active:scale-95 transition">
+                <Pencil className="h-3.5 w-3.5 text-primary" />
+              </button>
+            }
+          />
+          <button
+            onClick={(e) => { e.preventDefault(); onRemove(child.id); }}
+            aria-label="حذف"
+            className="p-1.5 rounded-full bg-white/95 shadow-card active:scale-95 transition"
+          >
+            <Trash2 className="h-3.5 w-3.5 text-destructive" />
+          </button>
+        </div>
       </Card>
     </Link>
   );
