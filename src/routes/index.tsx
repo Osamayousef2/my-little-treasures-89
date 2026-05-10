@@ -65,7 +65,7 @@ function HomePage() {
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {children.map((c) => (
-              <ChildCard key={c.id} child={c} count={countFor(c.id)} onRemove={removeChild} />
+              <ChildCard key={c.id} child={c} count={countFor(c.id)} onRemove={removeChild} onChanged={reloadChildren} />
             ))}
             <AddChildDialog userId={user.id} onAdded={reloadChildren} trigger={
               <button className="rounded-3xl border-2 border-dashed border-primary/40 hover:border-primary hover:bg-primary/5 flex flex-col items-center justify-center gap-2 text-primary transition-colors p-6 min-h-[160px]">
