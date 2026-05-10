@@ -116,6 +116,15 @@ export function Lightbox({ items, index, onClose, onIndex, childMap = {}, onUpda
           {item.description && <p className="text-sm text-muted-foreground mt-3 whitespace-pre-wrap">{item.description}</p>}
         </div>
       </DialogContent>
+      {isImage && url && item.file_url && (
+        <ImageCropDialog
+          open={cropOpen}
+          onOpenChange={setCropOpen}
+          src={url}
+          path={item.file_url}
+          onSaved={() => { setBust(Date.now()); onUpdated?.(); }}
+        />
+      )}
     </Dialog>
   );
 }
