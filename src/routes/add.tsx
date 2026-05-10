@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Save, Upload } from "lucide-react";
+import { Save, Upload, Sparkles } from "lucide-react";
 import { TagsInput } from "@/components/TagsInput";
 import { useMemories } from "@/lib/useMemories";
 import { z } from "zod";
