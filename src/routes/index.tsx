@@ -7,9 +7,11 @@ import { useChildren, type Child } from "@/lib/useChildren";
 import { AddChildDialog, colorOf } from "@/components/AddChildDialog";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Heart, Trash2, Images, Sparkles } from "lucide-react";
+import { Plus, Heart, Trash2, Images, Sparkles, Pencil } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { EditChildDialog } from "@/components/EditChildDialog";
+import { ageAt } from "@/lib/age";
 
 export const Route = createFileRoute("/")({
   head: () => ({ meta: [{ title: "الرئيسية - دفتر الذكريات" }] }),
