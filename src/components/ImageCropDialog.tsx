@@ -3,7 +3,7 @@ import Cropper, { type Area } from "react-easy-crop";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
-import { RotateCw, Save } from "lucide-react";
+import { RotateCw, Save, Undo2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -98,10 +98,15 @@ export function ImageCropDialog({ open, onOpenChange, src, path, onSaved }: {
             <label className="text-xs text-muted-foreground mb-1 block">تكبير</label>
             <Slider min={1} max={4} step={0.05} value={[zoom]} onValueChange={(v) => setZoom(v[0])} />
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 flex-wrap">
             <Button type="button" variant="outline" size="sm" className="rounded-full"
               onClick={() => setRotation((r) => (r + 90) % 360)}>
               <RotateCw className="h-4 w-4 ml-1" /> تدوير
+            </Button>
+            <Button type="button" variant="outline" size="sm" className="rounded-full"
+              disabled={busy || (crop.x === 0 && crop.y === 0 && zoom === 1 && rotation === 0)}
+              onClick={() => { setCrop({ x: 0, y: 0 }); setZoom(1); setRotation(0); }}>
+              <Undo2 className="h-4 w-4 ml-1" /> تراجع
             </Button>
             <Button type="button" disabled={busy || !area} onClick={save} className="flex-1 rounded-xl h-11 font-bold">
               <Save className="h-4 w-4 ml-2" /> {busy ? "جاري الحفظ..." : "حفظ التعديلات"}
