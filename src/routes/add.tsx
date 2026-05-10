@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Save, Upload } from "lucide-react";
+import { Save, Upload, Sparkles } from "lucide-react";
 import { TagsInput } from "@/components/TagsInput";
 import { useMemories } from "@/lib/useMemories";
 import { z } from "zod";
@@ -42,6 +42,7 @@ function AddPage() {
   const [childId, setChildId] = useState<string>("none");
   const [tags, setTags] = useState<string[]>([]);
   const [busy, setBusy] = useState(false);
+  const [suggesting, setSuggesting] = useState(false);
   const { children } = useChildren(user?.id);
   const { items } = useMemories(user?.id);
   const allTags = Array.from(new Set(items.flatMap((i) => i.tags ?? []))).sort();
@@ -77,6 +78,36 @@ function AddPage() {
     if (error) return toast.error(error.message);
     toast.success("تم الحفظ 💛");
     navigate({ to: "/album" });
+  };
+
+  const suggest = async () => {
+    if (!file) return toast.error("اختر صورة أولاً");
+    if (!file.type.startsWith("image/")) return toast.error("الاقتراح يعمل مع الصور فقط");
+    setSuggesting(true);
+    try {
+      const dataUrl = await new Promise<string>((res, rej) => {
+        const r = new FileReader();
+        r.onload = () => res(r.result as string);
+        r.onerror = rej;
+        r.readAsDataURL(file);
+      });
+      const { data, error } = await supabase.functions.invoke("suggest-memory", {
+        body: { imageDataUrl: dataUrl, category, knownTags: allTags.slice(0, 30) },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      if (data?.title && !title) setTitle(data.title);
+      if (data?.description && !desc) setDesc(data.description);
+      if (Array.isArray(data?.tags)) {
+        const merged = Array.from(new Set([...(tags ?? []), ...data.tags]));
+        setTags(merged);
+      }
+      toast.success("تم الاقتراح ✨");
+    } catch (e: unknown) {
+      toast.error(e instanceof Error ? e.message : "تعذّر الاقتراح");
+    } finally {
+      setSuggesting(false);
+    }
   };
 
   return (
@@ -143,6 +174,13 @@ function AddPage() {
                 <span className="text-sm text-muted-foreground truncate">{file ? file.name : "اختر صورة، فيديو، PDF أو ملف"}</span>
               </label>
               <input id="file" type="file" accept={accept} className="hidden" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
+              {file && file.type.startsWith("image/") && (
+                <Button type="button" variant="outline" size="sm" onClick={suggest} disabled={suggesting}
+                  className="mt-2 rounded-full">
+                  <Sparkles className="h-4 w-4 ml-1" />
+                  {suggesting ? "جاري التحليل..." : "اقتراح تلقائي بالذكاء الاصطناعي"}
+                </Button>
+              )}
             </div>
 
             <Button type="submit" disabled={busy} className="w-full h-11 rounded-lg font-bold">

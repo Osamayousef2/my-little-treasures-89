@@ -1,1 +1,4 @@
 project_id = "lgmtnzkcfmfvpadgzdmq"
+
+[functions.suggest-memory]
+verify_jwt = false
