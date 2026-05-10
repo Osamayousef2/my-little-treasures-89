@@ -80,6 +80,36 @@ function AddPage() {
     navigate({ to: "/album" });
   };
 
+  const suggest = async () => {
+    if (!file) return toast.error("اختر صورة أولاً");
+    if (!file.type.startsWith("image/")) return toast.error("الاقتراح يعمل مع الصور فقط");
+    setSuggesting(true);
+    try {
+      const dataUrl = await new Promise<string>((res, rej) => {
+        const r = new FileReader();
+        r.onload = () => res(r.result as string);
+        r.onerror = rej;
+        r.readAsDataURL(file);
+      });
+      const { data, error } = await supabase.functions.invoke("suggest-memory", {
+        body: { imageDataUrl: dataUrl, category, knownTags: allTags.slice(0, 30) },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      if (data?.title && !title) setTitle(data.title);
+      if (data?.description && !desc) setDesc(data.description);
+      if (Array.isArray(data?.tags)) {
+        const merged = Array.from(new Set([...(tags ?? []), ...data.tags]));
+        setTags(merged);
+      }
+      toast.success("تم الاقتراح ✨");
+    } catch (e: unknown) {
+      toast.error(e instanceof Error ? e.message : "تعذّر الاقتراح");
+    } finally {
+      setSuggesting(false);
+    }
+  };
+
   return (
     <AppShell>
       <div className="max-w-xl mx-auto">
