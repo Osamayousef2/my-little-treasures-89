@@ -9,7 +9,16 @@ import { useMemories } from "@/lib/useMemories";
 import { LogOut, Shield, Database } from "lucide-react";
 
 export const Route = createFileRoute("/settings")({
-  head: () => ({ meta: [{ title: "الإعدادات - دفتر الذكريات" }] }),
+  head: () => ({
+    meta: [
+      { title: "الإعدادات — ألبوم بنتي" },
+      { name: "description", content: "إدارة حسابك ومعلومات الخصوصية في ألبوم بنتي." },
+      { property: "og:title", content: "الإعدادات — ألبوم بنتي" },
+      { property: "og:description", content: "إدارة الحساب والخصوصية." },
+      { property: "og:url", content: "https://my-kiddo-album.lovable.app/settings" },
+    ],
+    links: [{ rel: "canonical", href: "https://my-kiddo-album.lovable.app/settings" }],
+  }),
   component: SettingsPage,
 });
 

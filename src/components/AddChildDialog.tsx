@@ -8,11 +8,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 export const CHILD_COLORS = [
-  { key: "pink", cls: "from-pink-300 to-pink-500" },
-  { key: "mint", cls: "from-emerald-300 to-emerald-500" },
-  { key: "sky", cls: "from-sky-300 to-sky-500" },
-  { key: "sun", cls: "from-amber-300 to-amber-500" },
-  { key: "lilac", cls: "from-purple-300 to-purple-500" },
+  { key: "pink", label: "وردي", cls: "from-pink-300 to-pink-500" },
+  { key: "mint", label: "أخضر فاتح", cls: "from-emerald-300 to-emerald-500" },
+  { key: "sky", label: "سماوي", cls: "from-sky-300 to-sky-500" },
+  { key: "sun", label: "أصفر شمسي", cls: "from-amber-300 to-amber-500" },
+  { key: "lilac", label: "بنفسجي", cls: "from-purple-300 to-purple-500" },
 ];
 
 export const colorOf = (key: string | null) =>
@@ -65,6 +65,8 @@ export function AddChildDialog({ userId, onAdded, trigger }: {
             <div className="flex gap-2 mt-2">
               {CHILD_COLORS.map((c) => (
                 <button key={c.key} type="button" onClick={() => setColor(c.key)}
+                  aria-label={`اختيار اللون ${c.label}`}
+                  aria-pressed={color === c.key}
                   className={`h-10 w-10 rounded-full bg-gradient-to-br ${c.cls} ${color === c.key ? "ring-4 ring-foreground/30" : ""}`} />
               ))}
             </div>

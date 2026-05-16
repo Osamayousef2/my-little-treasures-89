@@ -14,7 +14,16 @@ import { EditChildDialog } from "@/components/EditChildDialog";
 import { ageAt } from "@/lib/age";
 
 export const Route = createFileRoute("/")({
-  head: () => ({ meta: [{ title: "الرئيسية - دفتر الذكريات" }] }),
+  head: () => ({
+    meta: [
+      { title: "الرئيسية — ألبوم بنتي" },
+      { name: "description", content: "دفتر ذكريات العائلة: صفحة رئيسية تجمع كل أطفالك وتعرض ألبوم كل طفل في مكان واحد." },
+      { property: "og:title", content: "الرئيسية — ألبوم بنتي" },
+      { property: "og:description", content: "دفتر ذكريات العائلة: صفحة رئيسية تجمع كل أطفالك في مكان واحد." },
+      { property: "og:url", content: "https://my-kiddo-album.lovable.app/" },
+    ],
+    links: [{ rel: "canonical", href: "https://my-kiddo-album.lovable.app/" }],
+  }),
   component: HomePage,
 });
 

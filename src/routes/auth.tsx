@@ -9,7 +9,17 @@ import { toast } from "sonner";
 import { Sparkles } from "lucide-react";
 
 export const Route = createFileRoute("/auth")({
-  head: () => ({ meta: [{ title: "دخول - ألبوم بنتي" }] }),
+  head: () => ({
+    meta: [
+      { title: "دخول — ألبوم بنتي" },
+      { name: "description", content: "سجّل دخولك أو أنشئ حساباً جديداً لتبدأ بحفظ ذكريات أطفالك في ألبوم بنتي." },
+      { property: "og:title", content: "دخول — ألبوم بنتي" },
+      { property: "og:description", content: "سجّل دخولك أو أنشئ حساباً جديداً." },
+      { property: "og:url", content: "https://my-kiddo-album.lovable.app/auth" },
+      { name: "robots", content: "noindex" },
+    ],
+    links: [{ rel: "canonical", href: "https://my-kiddo-album.lovable.app/auth" }],
+  }),
   component: AuthPage,
 });
 
@@ -46,7 +56,7 @@ function AuthPage() {
           <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-hero shadow-soft mb-3">
             <Sparkles className="h-8 w-8 text-white" />
           </div>
-          <h1 className="text-3xl font-bold">ألبوم بنتي</h1>
+          <h1 className="text-3xl font-bold">ألبوم بنتي — احفظ ووثق ذكريات أطفالك</h1>
           <p className="text-muted-foreground text-sm mt-1">
             {mode === "signin" ? "أهلاً بعودتك 👋" : "ابدأ ألبوم ذكرياتك ✨"}
           </p>

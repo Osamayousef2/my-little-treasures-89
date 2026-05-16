@@ -23,7 +23,16 @@ const searchSchema = z.object({
 });
 
 export const Route = createFileRoute("/add")({
-  head: () => ({ meta: [{ title: "إضافة ذكرى - دفتر الذكريات" }] }),
+  head: () => ({
+    meta: [
+      { title: "إضافة ذكرى — ألبوم بنتي" },
+      { name: "description", content: "أضف ذكرى جديدة: صورة، فيديو، رسمة، شهادة أو ملاحظة، مع اقتراح عنوان ووصف ووسوم بالذكاء الاصطناعي." },
+      { property: "og:title", content: "إضافة ذكرى — ألبوم بنتي" },
+      { property: "og:description", content: "أضف ذكرى جديدة مع اقتراح تلقائي للعنوان والوسوم بالذكاء الاصطناعي." },
+      { property: "og:url", content: "https://my-kiddo-album.lovable.app/add" },
+    ],
+    links: [{ rel: "canonical", href: "https://my-kiddo-album.lovable.app/add" }],
+  }),
   validateSearch: zodValidator(searchSchema),
   component: AddPage,
 });
