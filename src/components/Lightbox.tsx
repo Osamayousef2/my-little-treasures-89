@@ -5,9 +5,10 @@ import type { Memory } from "@/lib/useMemories";
 import type { Child } from "@/lib/useChildren";
 import { categoryOf } from "@/lib/categories";
 import { ageAt } from "@/lib/age";
-import { ChevronLeft, ChevronRight, Download, Crop } from "lucide-react";
+import { ChevronLeft, ChevronRight, Download, Crop, Pencil } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { ImageCropDialog } from "./ImageCropDialog";
+import { EditMemoryDialog } from "./EditMemoryDialog";
 
 export function Lightbox({ items, index, onClose, onIndex, childMap = {}, onUpdated }: {
   items: Memory[];
@@ -18,6 +19,7 @@ export function Lightbox({ items, index, onClose, onIndex, childMap = {}, onUpda
   onUpdated?: () => void;
 }) {
   const [cropOpen, setCropOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
   const [bust, setBust] = useState(0);
   const open = index >= 0 && index < items.length;
   const item = open ? items[index] : null;
@@ -93,10 +95,13 @@ export function Lightbox({ items, index, onClose, onIndex, childMap = {}, onUpda
                 {ageStr && <span>🎂 {ageStr}</span>}
               </div>
             </div>
-            <div className="shrink-0 flex items-center gap-2">
+            <div className="shrink-0 flex items-center gap-2 flex-wrap">
+              <button onClick={() => setEditOpen(true)} className="h-9 px-3 rounded-full bg-accent text-accent-foreground text-xs font-bold flex items-center gap-1.5 shadow-soft">
+                <Pencil className="h-3.5 w-3.5" /> تعديل النص
+              </button>
               {isImage && url && item.file_url && (
                 <button onClick={() => setCropOpen(true)} className="h-9 px-3 rounded-full bg-secondary text-secondary-foreground text-xs font-bold flex items-center gap-1.5 shadow-soft">
-                  <Crop className="h-3.5 w-3.5" /> تعديل
+                  <Crop className="h-3.5 w-3.5" /> قص + ستيكرات
                 </button>
               )}
               {item.file_url && (
@@ -125,6 +130,12 @@ export function Lightbox({ items, index, onClose, onIndex, childMap = {}, onUpda
           onSaved={() => { setBust(Date.now()); onUpdated?.(); }}
         />
       )}
+      <EditMemoryDialog
+        open={editOpen}
+        onOpenChange={setEditOpen}
+        item={item}
+        onSaved={() => onUpdated?.()}
+      />
     </Dialog>
   );
 }
