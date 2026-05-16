@@ -219,7 +219,9 @@ export function ImageCropDialog({ open, onOpenChange, src, path, onSaved }: {
               >
                 {previewUrl && <img src={previewUrl} alt="" className="w-full h-full object-contain pointer-events-none" />}
                 {stickers.map((st) => {
-                  const sz = st.size * 100;
+                  const stageW = stageRef.current?.clientWidth ?? 0;
+                  const stageH = stageRef.current?.clientHeight ?? 0;
+                  const px = st.size * Math.min(stageW, stageH);
                   return (
                     <div
                       key={st.id}
@@ -229,10 +231,10 @@ export function ImageCropDialog({ open, onOpenChange, src, path, onSaved }: {
                       style={{
                         left: `${st.x * 100}%`, top: `${st.y * 100}%`,
                         transform: "translate(-50%, -50%)",
-                        fontSize: `${sz}cqmin`,
+                        fontSize: `${px}px`,
                       }}
                     >
-                      <span style={{ fontSize: `min(${sz}cqw, ${sz}cqh)` }}>{st.emoji}</span>
+                      {st.emoji}
                     </div>
                   );
                 })}
