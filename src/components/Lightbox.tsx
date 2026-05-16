@@ -19,6 +19,7 @@ export function Lightbox({ items, index, onClose, onIndex, childMap = {}, onUpda
   onUpdated?: () => void;
 }) {
   const [cropOpen, setCropOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
   const [bust, setBust] = useState(0);
   const open = index >= 0 && index < items.length;
   const item = open ? items[index] : null;
