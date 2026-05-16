@@ -95,10 +95,13 @@ export function Lightbox({ items, index, onClose, onIndex, childMap = {}, onUpda
                 {ageStr && <span>🎂 {ageStr}</span>}
               </div>
             </div>
-            <div className="shrink-0 flex items-center gap-2">
+            <div className="shrink-0 flex items-center gap-2 flex-wrap">
+              <button onClick={() => setEditOpen(true)} className="h-9 px-3 rounded-full bg-accent text-accent-foreground text-xs font-bold flex items-center gap-1.5 shadow-soft">
+                <Pencil className="h-3.5 w-3.5" /> تعديل النص
+              </button>
               {isImage && url && item.file_url && (
                 <button onClick={() => setCropOpen(true)} className="h-9 px-3 rounded-full bg-secondary text-secondary-foreground text-xs font-bold flex items-center gap-1.5 shadow-soft">
-                  <Crop className="h-3.5 w-3.5" /> تعديل
+                  <Crop className="h-3.5 w-3.5" /> قص + ستيكرات
                 </button>
               )}
               {item.file_url && (
