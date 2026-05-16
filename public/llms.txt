@@ -1,0 +1,15 @@
+# دفتر الذكريات — ألبوم بنتي
+
+> A private digital album for parents to capture and organize their children's drawings, certificates, photos, videos, and memories. Behind sign-in.
+
+## Pages
+
+- [الرئيسية](/): Landing — overview of your children and quick links into the album.
+- [الألبوم](/album): Browse, filter, and search all memories by child, category, tag, year.
+- [إضافة ذكرى](/add): Add a new memory (photo, video, drawing, certificate, note) with AI-assisted title, description, and tags.
+- [الفئات](/categories): Browse memories grouped by category.
+- [الإعدادات](/settings): Account information and privacy.
+
+## Optional
+
+- [دخول](/auth): Sign-in / sign-up page.
