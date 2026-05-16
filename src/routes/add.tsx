@@ -130,7 +130,7 @@ function AddPage() {
             <div>
               <Label>الفئة</Label>
               <Select value={category} onValueChange={(v) => setCategory(v as Category)}>
-                <SelectTrigger className="mt-1.5"><SelectValue /></SelectTrigger>
+                <SelectTrigger aria-label="اختيار فئة الذكرى" className="mt-1.5"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {CATEGORIES.map((c) => (
                     <SelectItem key={c.key} value={c.key}>
@@ -145,7 +145,7 @@ function AddPage() {
               <div>
                 <Label>الطفل (اختياري)</Label>
                 <Select value={childId} onValueChange={setChildId}>
-                  <SelectTrigger className="mt-1.5"><SelectValue /></SelectTrigger>
+                  <SelectTrigger aria-label="اختيار الطفل" className="mt-1.5"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="none">— غير محدد —</SelectItem>
                     {children.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
