@@ -215,7 +215,7 @@ export function ImageCropDialog({ open, onOpenChange, src, path, onSaved }: {
                 onPointerCancel={onStagePointerUp}
                 onClick={() => setSelectedId(null)}
                 className="relative w-full max-w-full max-h-[55vh] rounded-xl overflow-hidden touch-none select-none"
-                style={{ ...stageStyle, containerType: "size" }}
+                style={stageStyle}
               >
                 {previewUrl && <img src={previewUrl} alt="" className="w-full h-full object-contain pointer-events-none" />}
                 {stickers.map((st) => {
