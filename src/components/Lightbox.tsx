@@ -5,9 +5,10 @@ import type { Memory } from "@/lib/useMemories";
 import type { Child } from "@/lib/useChildren";
 import { categoryOf } from "@/lib/categories";
 import { ageAt } from "@/lib/age";
-import { ChevronLeft, ChevronRight, Download, Crop } from "lucide-react";
+import { ChevronLeft, ChevronRight, Download, Crop, Pencil } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { ImageCropDialog } from "./ImageCropDialog";
+import { EditMemoryDialog } from "./EditMemoryDialog";
 
 export function Lightbox({ items, index, onClose, onIndex, childMap = {}, onUpdated }: {
   items: Memory[];
