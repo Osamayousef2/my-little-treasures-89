@@ -144,7 +144,7 @@ function AlbumPage() {
         <TimelineView items={filtered} onChanged={reload} onOpen={setLightboxIndex} onMove={setMoveItem} childMap={childMap} onTagClick={(t) => update({ tag: t })} />
       )}
 
-      <Lightbox items={filtered} index={lightboxIndex} onClose={() => setLightboxIndex(-1)} onIndex={setLightboxIndex} childMap={childMap} />
+      <Lightbox items={filtered} index={lightboxIndex} onClose={() => setLightboxIndex(-1)} onIndex={setLightboxIndex} childMap={childMap} onUpdated={reload} />
       <MoveDialog open={!!moveItem} onOpenChange={(v) => !v && setMoveItem(null)} item={moveItem} userId={user.id} onMoved={reload} />
     </AppShell>
   );
