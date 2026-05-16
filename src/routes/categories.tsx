@@ -8,7 +8,16 @@ import { Card } from "@/components/ui/card";
 import { ChevronLeft } from "lucide-react";
 
 export const Route = createFileRoute("/categories")({
-  head: () => ({ meta: [{ title: "الفئات - دفتر الذكريات" }] }),
+  head: () => ({
+    meta: [
+      { title: "الفئات — ألبوم بنتي" },
+      { name: "description", content: "تصفح ذكريات أطفالك حسب الفئة: صور، فيديو، رسومات، شهادات، مدرسة وملاحظات." },
+      { property: "og:title", content: "الفئات — ألبوم بنتي" },
+      { property: "og:description", content: "تصفح الذكريات حسب الفئة بسرعة." },
+      { property: "og:url", content: "https://my-kiddo-album.lovable.app/categories" },
+    ],
+    links: [{ rel: "canonical", href: "https://my-kiddo-album.lovable.app/categories" }],
+  }),
   component: CategoriesPage,
 });
 

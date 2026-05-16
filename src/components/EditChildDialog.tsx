@@ -57,6 +57,8 @@ export function EditChildDialog({ child, onSaved, trigger }: {
             <div className="flex gap-2 mt-2">
               {CHILD_COLORS.map((c) => (
                 <button key={c.key} type="button" onClick={() => setColor(c.key)}
+                  aria-label={`اختيار اللون ${c.label}`}
+                  aria-pressed={color === c.key}
                   className={`h-10 w-10 rounded-full bg-gradient-to-br ${c.cls} ${color === c.key ? "ring-4 ring-foreground/30" : ""}`} />
               ))}
             </div>

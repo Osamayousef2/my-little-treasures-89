@@ -28,7 +28,16 @@ const searchSchema = z.object({
 });
 
 export const Route = createFileRoute("/album")({
-  head: () => ({ meta: [{ title: "الألبوم - دفتر الذكريات" }] }),
+  head: () => ({
+    meta: [
+      { title: "الألبوم — ألبوم بنتي" },
+      { name: "description", content: "تصفح وابحث في كل ذكريات أطفالك: صور، فيديو، رسومات وشهادات مع فلاتر حسب الطفل والفئة والوسم والسنة." },
+      { property: "og:title", content: "الألبوم — ألبوم بنتي" },
+      { property: "og:description", content: "تصفح وابحث في كل ذكريات أطفالك مع فلاتر متقدمة." },
+      { property: "og:url", content: "https://my-kiddo-album.lovable.app/album" },
+    ],
+    links: [{ rel: "canonical", href: "https://my-kiddo-album.lovable.app/album" }],
+  }),
   validateSearch: zodValidator(searchSchema),
   component: AlbumPage,
 });
@@ -94,23 +103,23 @@ function AlbumPage() {
       </div>
 
       <Card className="p-3 mb-6 grid grid-cols-2 lg:grid-cols-4 gap-2 shadow-card rounded-2xl">
-        <Input placeholder="🔍 بحث..." value={search.q} onChange={(e) => update({ q: e.target.value })} className="rounded-xl col-span-2 lg:col-span-1" />
+        <Input aria-label="بحث في الذكريات" placeholder="🔍 بحث..." value={search.q} onChange={(e) => update({ q: e.target.value })} className="rounded-xl col-span-2 lg:col-span-1" />
         <Select value={search.category} onValueChange={(v) => update({ category: v as Category | "all" })}>
-          <SelectTrigger className="rounded-xl"><SelectValue placeholder="الفئة" /></SelectTrigger>
+          <SelectTrigger aria-label="تصفية حسب الفئة" className="rounded-xl"><SelectValue placeholder="الفئة" /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">كل الفئات</SelectItem>
             {CATEGORIES.map((c) => <SelectItem key={c.key} value={c.key}>{c.label}</SelectItem>)}
           </SelectContent>
         </Select>
         <Select value={search.child} onValueChange={(v) => update({ child: v })}>
-          <SelectTrigger className="rounded-xl"><SelectValue placeholder="الطفل" /></SelectTrigger>
+          <SelectTrigger aria-label="تصفية حسب الطفل" className="rounded-xl"><SelectValue placeholder="الطفل" /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">كل الأطفال</SelectItem>
             {children.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
           </SelectContent>
         </Select>
         <Select value={search.year} onValueChange={(v) => update({ year: v })}>
-          <SelectTrigger className="rounded-xl"><SelectValue placeholder="السنة" /></SelectTrigger>
+          <SelectTrigger aria-label="تصفية حسب السنة" className="rounded-xl"><SelectValue placeholder="السنة" /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">كل السنوات</SelectItem>
             {years.map((y) => <SelectItem key={y} value={y}>{y}</SelectItem>)}
@@ -182,9 +191,9 @@ function TimelineView({ items, ...rest }: { items: Memory[] } & CardCommonProps)
     <div className="space-y-8">
       {groups.map(([ym, list]) => (
         <section key={ym}>
-          <h3 className="font-bold text-sm text-primary mb-3 sticky top-14 bg-background/90 backdrop-blur py-2 rounded-full px-3 inline-block shadow-card">
+          <h2 className="font-bold text-sm text-primary mb-3 sticky top-14 bg-background/90 backdrop-blur py-2 rounded-full px-3 inline-block shadow-card">
             {fmtMonth(ym)} <span className="text-muted-foreground font-normal">({list.length})</span>
-          </h3>
+          </h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
             {list.map(({ item, index }) => <MemoryCard key={item.id} item={item} index={index} {...rest} />)}
           </div>

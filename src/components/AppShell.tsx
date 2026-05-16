@@ -35,18 +35,18 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       <main className="max-w-5xl mx-auto px-4 py-6">{children}</main>
 
-      <nav className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 bg-card/95 backdrop-blur border border-border rounded-full shadow-soft px-2 py-1.5 flex items-center gap-1">
+      <nav aria-label="التنقل الرئيسي" className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 bg-card/95 backdrop-blur border border-border rounded-full shadow-soft px-2 py-1.5 flex items-center gap-1">
         {NAV.map((n) => {
           const active = n.to === "/" ? location.pathname === "/" : location.pathname.startsWith(n.to);
           if (n.primary) {
             return (
-              <Link key={n.to} to={n.to} className="mx-1 h-11 w-11 rounded-full bg-primary text-primary-foreground grid place-items-center shadow-soft hover:bg-primary/90 transition">
+              <Link key={n.to} to={n.to} aria-label={n.label} className="mx-1 h-11 w-11 rounded-full bg-primary text-primary-foreground grid place-items-center shadow-soft hover:bg-primary/90 transition">
                 <n.icon className="h-5 w-5" />
               </Link>
             );
           }
           return (
-            <Link key={n.to} to={n.to}
+            <Link key={n.to} to={n.to} aria-label={n.label}
               className={`px-3 h-10 rounded-full grid place-items-center text-xs font-medium gap-1 flex-row-reverse transition ${active ? "bg-accent text-accent-foreground" : "text-muted-foreground hover:text-foreground"}`}
             >
               <n.icon className="h-4 w-4" />
