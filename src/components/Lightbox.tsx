@@ -130,6 +130,12 @@ export function Lightbox({ items, index, onClose, onIndex, childMap = {}, onUpda
           onSaved={() => { setBust(Date.now()); onUpdated?.(); }}
         />
       )}
+      <EditMemoryDialog
+        open={editOpen}
+        onOpenChange={setEditOpen}
+        item={item}
+        onSaved={() => onUpdated?.()}
+      />
     </Dialog>
   );
 }
