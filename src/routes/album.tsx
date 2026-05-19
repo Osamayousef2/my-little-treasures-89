@@ -102,8 +102,8 @@ function AlbumPage() {
         </div>
       </div>
 
-      <Card asChild className="p-3 mb-6 shadow-card rounded-2xl">
-        <search role="search" aria-labelledby="filters-heading" className="grid grid-cols-2 lg:grid-cols-4 gap-2">
+      <search role="search" aria-labelledby="filters-heading" className="block mb-6">
+        <Card className="p-3 grid grid-cols-2 lg:grid-cols-4 gap-2 shadow-card rounded-2xl">
           <h2 id="filters-heading" className="sr-only">فلاتر البحث في الألبوم</h2>
           <div className="col-span-2 lg:col-span-1">
             <label htmlFor="album-search" className="sr-only">بحث في الذكريات بالعنوان أو الوصف أو الوسوم</label>
