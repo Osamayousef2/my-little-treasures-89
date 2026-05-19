@@ -92,49 +92,64 @@ function AlbumPage() {
           <h1 className="text-2xl font-bold">الألبوم 💝</h1>
           <p className="text-sm text-muted-foreground mt-1">{filtered.length} من {items.length} عنصر</p>
         </div>
-        <div className="flex gap-1 bg-muted rounded-full p-1 shadow-card">
-          <button onClick={() => update({ view: "grid" })} className={`px-3 h-8 rounded-full text-xs flex items-center gap-1 transition ${search.view === "grid" ? "bg-card shadow-card font-bold" : "text-muted-foreground"}`}>
-            <LayoutGrid className="h-3.5 w-3.5" /> شبكة
+        <div role="tablist" aria-label="طريقة عرض الألبوم" className="flex gap-1 bg-muted rounded-full p-1 shadow-card">
+          <button role="tab" aria-selected={search.view === "grid"} aria-label="عرض شبكي" onClick={() => update({ view: "grid" })} className={`px-3 h-8 rounded-full text-xs flex items-center gap-1 transition ${search.view === "grid" ? "bg-card shadow-card font-bold" : "text-muted-foreground"}`}>
+            <LayoutGrid className="h-3.5 w-3.5" aria-hidden="true" /> شبكة
           </button>
-          <button onClick={() => update({ view: "timeline" })} className={`px-3 h-8 rounded-full text-xs flex items-center gap-1 transition ${search.view === "timeline" ? "bg-card shadow-card font-bold" : "text-muted-foreground"}`}>
-            <Calendar className="h-3.5 w-3.5" /> الخط الزمني
+          <button role="tab" aria-selected={search.view === "timeline"} aria-label="عرض الخط الزمني" onClick={() => update({ view: "timeline" })} className={`px-3 h-8 rounded-full text-xs flex items-center gap-1 transition ${search.view === "timeline" ? "bg-card shadow-card font-bold" : "text-muted-foreground"}`}>
+            <Calendar className="h-3.5 w-3.5" aria-hidden="true" /> الخط الزمني
           </button>
         </div>
       </div>
 
-      <Card className="p-3 mb-6 grid grid-cols-2 lg:grid-cols-4 gap-2 shadow-card rounded-2xl">
-        <Input aria-label="بحث في الذكريات" placeholder="🔍 بحث..." value={search.q} onChange={(e) => update({ q: e.target.value })} className="rounded-xl col-span-2 lg:col-span-1" />
-        <Select value={search.category} onValueChange={(v) => update({ category: v as Category | "all" })}>
-          <SelectTrigger aria-label="تصفية حسب الفئة" className="rounded-xl"><SelectValue placeholder="الفئة" /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">كل الفئات</SelectItem>
-            {CATEGORIES.map((c) => <SelectItem key={c.key} value={c.key}>{c.label}</SelectItem>)}
-          </SelectContent>
-        </Select>
-        <Select value={search.child} onValueChange={(v) => update({ child: v })}>
-          <SelectTrigger aria-label="تصفية حسب الطفل" className="rounded-xl"><SelectValue placeholder="الطفل" /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">كل الأطفال</SelectItem>
-            {children.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
-          </SelectContent>
-        </Select>
-        <Select value={search.year} onValueChange={(v) => update({ year: v })}>
-          <SelectTrigger aria-label="تصفية حسب السنة" className="rounded-xl"><SelectValue placeholder="السنة" /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">كل السنوات</SelectItem>
-            {years.map((y) => <SelectItem key={y} value={y}>{y}</SelectItem>)}
-          </SelectContent>
-        </Select>
-      </Card>
+      <search role="search" aria-labelledby="filters-heading" className="block mb-6">
+        <Card className="p-3 grid grid-cols-2 lg:grid-cols-4 gap-2 shadow-card rounded-2xl">
+          <h2 id="filters-heading" className="sr-only">فلاتر البحث في الألبوم</h2>
+          <div className="col-span-2 lg:col-span-1">
+            <label htmlFor="album-search" className="sr-only">بحث في الذكريات بالعنوان أو الوصف أو الوسوم</label>
+            <Input id="album-search" name="q" type="search" placeholder="🔍 بحث..." value={search.q} onChange={(e) => update({ q: e.target.value })} className="rounded-xl w-full" />
+          </div>
+          <div>
+            <label id="filter-category-label" htmlFor="filter-category" className="sr-only">تصفية حسب الفئة</label>
+            <Select value={search.category} onValueChange={(v) => update({ category: v as Category | "all" })}>
+              <SelectTrigger id="filter-category" aria-labelledby="filter-category-label" className="rounded-xl"><SelectValue placeholder="الفئة" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">كل الفئات</SelectItem>
+                {CATEGORIES.map((c) => <SelectItem key={c.key} value={c.key}>{c.label}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <label id="filter-child-label" htmlFor="filter-child" className="sr-only">تصفية حسب الطفل</label>
+            <Select value={search.child} onValueChange={(v) => update({ child: v })}>
+              <SelectTrigger id="filter-child" aria-labelledby="filter-child-label" className="rounded-xl"><SelectValue placeholder="الطفل" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">كل الأطفال</SelectItem>
+                {children.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <label id="filter-year-label" htmlFor="filter-year" className="sr-only">تصفية حسب السنة</label>
+            <Select value={search.year} onValueChange={(v) => update({ year: v })}>
+              <SelectTrigger id="filter-year" aria-labelledby="filter-year-label" className="rounded-xl"><SelectValue placeholder="السنة" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">كل السنوات</SelectItem>
+                {years.map((y) => <SelectItem key={y} value={y}>{y}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
+        </Card>
+      </search>
 
       {allTags.length > 0 && (
-        <div className="flex flex-wrap gap-1.5 mb-5">
-          <button onClick={() => update({ tag: "all" })}
+        <div role="group" aria-label="تصفية حسب الوسم" className="flex flex-wrap gap-1.5 mb-5">
+          <button onClick={() => update({ tag: "all" })} aria-pressed={search.tag === "all"} aria-label="عرض كل الوسوم"
             className={`text-xs px-2.5 py-1 rounded-full font-bold transition ${search.tag === "all" ? "bg-primary text-primary-foreground" : "bg-muted hover:bg-accent"}`}>
             الكل
           </button>
           {allTags.map((t) => (
-            <button key={t} onClick={() => update({ tag: search.tag === t ? "all" : t })}
+            <button key={t} onClick={() => update({ tag: search.tag === t ? "all" : t })} aria-pressed={search.tag === t} aria-label={`تصفية حسب الوسم ${t}`}
               className={`text-xs px-2.5 py-1 rounded-full font-bold transition ${search.tag === t ? "bg-primary text-primary-foreground" : "bg-muted hover:bg-accent"}`}>
               #{t}
             </button>

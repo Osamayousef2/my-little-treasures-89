@@ -126,15 +126,17 @@ function AddPage() {
         <p className="text-sm text-muted-foreground mb-6">احفظ لحظة تستحق التذكر</p>
 
         <Card className="p-5 shadow-card">
-          <form onSubmit={submit} className="space-y-4">
+          <form onSubmit={submit} className="space-y-4" aria-labelledby="add-form-title">
+            <h2 id="add-form-title" className="sr-only">نموذج إضافة ذكرى جديدة</h2>
+
             <div>
-              <Label>الفئة</Label>
+              <Label htmlFor="category" id="category-label">الفئة</Label>
               <Select value={category} onValueChange={(v) => setCategory(v as Category)}>
-                <SelectTrigger aria-label="اختيار فئة الذكرى" className="mt-1.5"><SelectValue /></SelectTrigger>
+                <SelectTrigger id="category" aria-labelledby="category-label" className="mt-1.5"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {CATEGORIES.map((c) => (
                     <SelectItem key={c.key} value={c.key}>
-                      <span className="flex items-center gap-2"><c.icon className="h-4 w-4" /> {c.label}</span>
+                      <span className="flex items-center gap-2"><c.icon className="h-4 w-4" aria-hidden="true" /> {c.label}</span>
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -143,9 +145,9 @@ function AddPage() {
 
             {children.length > 0 && (
               <div>
-                <Label>الطفل (اختياري)</Label>
+                <Label htmlFor="child" id="child-label">الطفل (اختياري)</Label>
                 <Select value={childId} onValueChange={setChildId}>
-                  <SelectTrigger aria-label="اختيار الطفل" className="mt-1.5"><SelectValue /></SelectTrigger>
+                  <SelectTrigger id="child" aria-labelledby="child-label" className="mt-1.5"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="none">— غير محدد —</SelectItem>
                     {children.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
@@ -156,44 +158,47 @@ function AddPage() {
 
             <div>
               <Label htmlFor="title">العنوان</Label>
-              <Input id="title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="مثلاً: شهادة التفوق - الصف الأول" className="mt-1.5" />
+              <Input id="title" name="title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="مثلاً: شهادة التفوق - الصف الأول" className="mt-1.5" aria-describedby="title-hint" />
+              <span id="title-hint" className="sr-only">عنوان مختصر يصف الذكرى</span>
             </div>
 
             <div>
               <Label htmlFor="date">التاريخ</Label>
-              <Input id="date" type="date" value={date} onChange={(e) => setDate(e.target.value)} className="mt-1.5" />
+              <Input id="date" name="date" type="date" value={date} onChange={(e) => setDate(e.target.value)} className="mt-1.5" />
             </div>
 
             <div>
               <Label htmlFor="desc">الوصف / ملاحظات</Label>
-              <Textarea id="desc" value={desc} onChange={(e) => setDesc(e.target.value)} rows={4} placeholder="اكتب تفاصيل أو ذكرى مرتبطة بهذه اللحظة..." className="mt-1.5" />
+              <Textarea id="desc" name="desc" value={desc} onChange={(e) => setDesc(e.target.value)} rows={4} placeholder="اكتب تفاصيل أو ذكرى مرتبطة بهذه اللحظة..." className="mt-1.5" aria-describedby="desc-hint" />
+              <span id="desc-hint" className="sr-only">وصف تفصيلي اختياري للذكرى</span>
             </div>
 
-            <div>
-              <Label>الوسوم</Label>
+            <div role="group" aria-labelledby="tags-label">
+              <Label id="tags-label">الوسوم</Label>
               <div className="mt-1.5">
                 <TagsInput value={tags} onChange={setTags} placeholder="مثلاً: عيد ميلاد، سفر، أول مرة" suggestions={allTags} />
               </div>
             </div>
 
             <div>
-              <Label htmlFor="file">الملف {fileRequired ? "" : "(اختياري)"}</Label>
+              <Label htmlFor="file">الملف {fileRequired ? "(مطلوب)" : "(اختياري)"}</Label>
               <label htmlFor="file" className="mt-1.5 flex items-center gap-3 px-4 py-3 border-2 border-dashed border-border rounded-lg cursor-pointer hover:border-primary transition">
-                <Upload className="h-5 w-5 text-muted-foreground" />
+                <Upload className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
                 <span className="text-sm text-muted-foreground truncate">{file ? file.name : "اختر صورة، فيديو، PDF أو ملف"}</span>
               </label>
-              <input id="file" type="file" accept={accept} className="hidden" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
+              <input id="file" name="file" type="file" accept={accept} className="sr-only" onChange={(e) => setFile(e.target.files?.[0] ?? null)} aria-required={fileRequired} />
               {file && file.type.startsWith("image/") && (
                 <Button type="button" variant="outline" size="sm" onClick={suggest} disabled={suggesting}
+                  aria-label="اقتراح عنوان ووصف ووسوم تلقائياً بالذكاء الاصطناعي"
                   className="mt-2 rounded-full">
-                  <Sparkles className="h-4 w-4 ml-1" />
+                  <Sparkles className="h-4 w-4 ml-1" aria-hidden="true" />
                   {suggesting ? "جاري التحليل..." : "اقتراح تلقائي بالذكاء الاصطناعي"}
                 </Button>
               )}
             </div>
 
-            <Button type="submit" disabled={busy} className="w-full h-11 rounded-lg font-bold">
-              <Save className="h-4 w-4 ml-2" /> {busy ? "جاري الحفظ..." : "حفظ الذكرى"}
+            <Button type="submit" disabled={busy} className="w-full h-11 rounded-lg font-bold" aria-label={busy ? "جاري حفظ الذكرى" : "حفظ الذكرى"}>
+              <Save className="h-4 w-4 ml-2" aria-hidden="true" /> {busy ? "جاري الحفظ..." : "حفظ الذكرى"}
             </Button>
           </form>
         </Card>
