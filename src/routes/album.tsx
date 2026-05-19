@@ -139,8 +139,8 @@ function AlbumPage() {
               </SelectContent>
             </Select>
           </div>
-        </search>
-      </Card>
+        </Card>
+      </search>
 
       {allTags.length > 0 && (
         <div role="group" aria-label="تصفية حسب الوسم" className="flex flex-wrap gap-1.5 mb-5">
