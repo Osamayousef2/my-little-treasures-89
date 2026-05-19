@@ -19,21 +19,27 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen pb-24">
-      <header className="border-b border-border/60 bg-card/50 backdrop-blur sticky top-0 z-30">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:right-3 focus:z-50 focus:px-4 focus:py-2 focus:rounded-full focus:bg-primary focus:text-primary-foreground focus:shadow-soft focus:outline-none focus:ring-2 focus:ring-ring"
+      >
+        تخطَّ إلى المحتوى الرئيسي
+      </a>
+      <header role="banner" className="border-b border-border/60 bg-card/50 backdrop-blur sticky top-0 z-30">
         <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-lg bg-primary/10 text-primary grid place-items-center">
+          <Link to="/" className="flex items-center gap-2" aria-label="الذهاب إلى الصفحة الرئيسية">
+            <div className="h-8 w-8 rounded-lg bg-primary/10 text-primary grid place-items-center" aria-hidden="true">
               <BookHeart className="h-4 w-4" />
             </div>
             <span className="font-bold text-base">دفتر الذكريات</span>
           </Link>
-          <Button variant="ghost" size="icon" onClick={signOut} aria-label="خروج">
+          <Button variant="ghost" size="icon" onClick={signOut} aria-label="تسجيل الخروج من الحساب">
             <LogOut className="h-4 w-4" />
           </Button>
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-4 py-6">{children}</main>
+      <main id="main-content" tabIndex={-1} className="max-w-5xl mx-auto px-4 py-6 focus:outline-none">{children}</main>
 
       <nav aria-label="التنقل الرئيسي" className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 bg-card/95 backdrop-blur border border-border rounded-full shadow-soft px-2 py-1.5 flex items-center gap-1">
         {NAV.map((n) => {
