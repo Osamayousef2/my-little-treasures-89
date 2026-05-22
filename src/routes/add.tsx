@@ -113,7 +113,7 @@ function AddPage() {
         r.readAsDataURL(file);
       });
       const { data, error } = await supabase.functions.invoke("suggest-memory", {
-        body: { imageDataUrl: dataUrl, category, knownTags: allTags.slice(0, 30) },
+        body: { imageDataUrl: dataUrl, category, occasion: occasion === "none" ? null : occasion, occasionLabel: OCCASIONS.find(o => o.key === occasion)?.label ?? null, knownTags: allTags.slice(0, 30) },
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
