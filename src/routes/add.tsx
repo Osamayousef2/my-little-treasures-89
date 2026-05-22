@@ -169,6 +169,18 @@ function AddPage() {
             )}
 
             <div>
+              <Label htmlFor="occasion" id="occasion-label">المناسبة (اختياري)</Label>
+              <Select value={occasion} onValueChange={setOccasion}>
+                <SelectTrigger id="occasion" aria-labelledby="occasion-label" className="mt-1.5"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {OCCASIONS.map((o) => <SelectItem key={o.key} value={o.key}>{o.label}</SelectItem>)}
+                </SelectContent>
+              </Select>
+              <span className="text-xs text-muted-foreground mt-1 block">يساعد الذكاء الاصطناعي على توليد عنوان ووصف ووسوم أدق.</span>
+            </div>
+
+
+            <div>
               <Label htmlFor="title">العنوان</Label>
               <Input id="title" name="title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="مثلاً: شهادة التفوق - الصف الأول" className="mt-1.5" aria-describedby="title-hint" />
               <span id="title-hint" className="sr-only">عنوان مختصر يصف الذكرى</span>
