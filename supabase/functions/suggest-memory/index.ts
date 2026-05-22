@@ -8,7 +8,7 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { imageDataUrl, category, knownTags } = await req.json();
+    const { imageDataUrl, category, occasion, occasionLabel, knownTags } = await req.json();
     if (!imageDataUrl) {
       return new Response(JSON.stringify({ error: "imageDataUrl required" }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -18,11 +18,13 @@ Deno.serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY missing");
 
+    const occText = occasionLabel || occasion;
     const sys = `أنت مساعد لتوثيق ألبوم ذكريات أطفال عائلي بالعربية. حلّل الصورة واستنتج:
 - عنوان قصير (٢-٦ كلمات) باللهجة الفصحى البسيطة
 - وصف قصير من جملة أو جملتين يصف اللحظة
 - ٣ إلى ٦ وسوم قصيرة (كلمة واحدة أو كلمتين) بدون رمز #
 الفئة: ${category ?? "غير محددة"}.
+${occText ? `المناسبة: ${occText}. اجعل العنوان والوصف والوسوم متوافقة مع طابع هذه المناسبة، وأضف وسماً يدل عليها عند الملاءمة.` : ""}
 ${knownTags?.length ? `استخدم وسوماً موجودة سابقاً عند ملاءمتها: ${knownTags.join("، ")}.` : ""}
 أرجع النتيجة عبر استدعاء الأداة فقط.`;
 

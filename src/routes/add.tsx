@@ -50,11 +50,23 @@ function AddPage() {
   const [file, setFile] = useState<File | null>(null);
   const [childId, setChildId] = useState<string>("none");
   const [tags, setTags] = useState<string[]>([]);
+  const [occasion, setOccasion] = useState<string>("none");
   const [busy, setBusy] = useState(false);
   const [suggesting, setSuggesting] = useState(false);
   const { children } = useChildren(user?.id);
   const { items } = useMemories(user?.id);
   const allTags = Array.from(new Set(items.flatMap((i) => i.tags ?? []))).sort();
+
+  const OCCASIONS: { key: string; label: string }[] = [
+    { key: "none", label: "— غير محددة —" },
+    { key: "birthday", label: "عيد ميلاد" },
+    { key: "school", label: "مدرسة" },
+    { key: "trip", label: "رحلة" },
+    { key: "holiday", label: "عطلة / عيد" },
+    { key: "family", label: "تجمع عائلي" },
+    { key: "achievement", label: "إنجاز" },
+    { key: "everyday", label: "لحظة يومية" },
+  ];
 
   if (loading || !user) return null;
 
@@ -101,7 +113,7 @@ function AddPage() {
         r.readAsDataURL(file);
       });
       const { data, error } = await supabase.functions.invoke("suggest-memory", {
-        body: { imageDataUrl: dataUrl, category, knownTags: allTags.slice(0, 30) },
+        body: { imageDataUrl: dataUrl, category, occasion: occasion === "none" ? null : occasion, occasionLabel: OCCASIONS.find(o => o.key === occasion)?.label ?? null, knownTags: allTags.slice(0, 30) },
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
@@ -155,6 +167,18 @@ function AddPage() {
                 </Select>
               </div>
             )}
+
+            <div>
+              <Label htmlFor="occasion" id="occasion-label">المناسبة (اختياري)</Label>
+              <Select value={occasion} onValueChange={setOccasion}>
+                <SelectTrigger id="occasion" aria-labelledby="occasion-label" className="mt-1.5"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {OCCASIONS.map((o) => <SelectItem key={o.key} value={o.key}>{o.label}</SelectItem>)}
+                </SelectContent>
+              </Select>
+              <span className="text-xs text-muted-foreground mt-1 block">يساعد الذكاء الاصطناعي على توليد عنوان ووصف ووسوم أدق.</span>
+            </div>
+
 
             <div>
               <Label htmlFor="title">العنوان</Label>
