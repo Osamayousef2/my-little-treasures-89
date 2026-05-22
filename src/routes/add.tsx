@@ -50,11 +50,23 @@ function AddPage() {
   const [file, setFile] = useState<File | null>(null);
   const [childId, setChildId] = useState<string>("none");
   const [tags, setTags] = useState<string[]>([]);
+  const [occasion, setOccasion] = useState<string>("none");
   const [busy, setBusy] = useState(false);
   const [suggesting, setSuggesting] = useState(false);
   const { children } = useChildren(user?.id);
   const { items } = useMemories(user?.id);
   const allTags = Array.from(new Set(items.flatMap((i) => i.tags ?? []))).sort();
+
+  const OCCASIONS: { key: string; label: string }[] = [
+    { key: "none", label: "— غير محددة —" },
+    { key: "birthday", label: "عيد ميلاد" },
+    { key: "school", label: "مدرسة" },
+    { key: "trip", label: "رحلة" },
+    { key: "holiday", label: "عطلة / عيد" },
+    { key: "family", label: "تجمع عائلي" },
+    { key: "achievement", label: "إنجاز" },
+    { key: "everyday", label: "لحظة يومية" },
+  ];
 
   if (loading || !user) return null;
 
